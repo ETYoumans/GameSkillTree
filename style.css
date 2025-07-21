@@ -35,6 +35,12 @@ svg#tree {
   stroke-width: 1;
 }
 
+.lockedNode {
+  fill: #aaa;
+  stroke: #333;
+  stroke-width: 1;
+}
+
 .label {
   font: 12px sans-serif;
   text-anchor: middle;

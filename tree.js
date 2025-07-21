@@ -1,7 +1,6 @@
 export class Tree {
-    constructor(root, username, treename){
+    constructor(root, treename){
         this.root = root;
-        this.username = username;
         this.treename = treename;
         this.points = 0;
     }
