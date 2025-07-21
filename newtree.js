@@ -1,6 +1,6 @@
-import Node from "node.js"
-import Tree from "tree.js"
-import {fetchGame, fetchRandomGame} from "steam.js"
+import {Node} from "./node.js"
+import {Tree} from "./tree.js"
+import {fetchGame, fetchRandomGame} from "./steam.js"
 
 const options = {
     steam: true
@@ -22,6 +22,7 @@ export function newTree(gameNames) {
             itr++;
         }
     }
-
+    
+    return root;
 
 }

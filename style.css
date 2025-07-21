@@ -1,3 +1,8 @@
+
+html {
+    background-color: blue;
+}
+
 .sidebar {
     height: 100%;
     width: 20%;
@@ -9,4 +14,33 @@
     overflow-x: hidden;
     padding-top: 20px;
     padding-left: 15px;
+}
+
+#treeContainer {
+  position: relative;
+  width: 75%;
+  height: 90vh;
+  left: 10%;
+  margin: 1em auto;
+}
+
+svg#tree {
+  width: 100%;
+  height: 100%;
+}
+
+.node {
+  fill: #f0f0f0;
+  stroke: #333;
+  stroke-width: 1;
+}
+
+.label {
+  font: 12px sans-serif;
+  text-anchor: middle;
+}
+
+line {
+  stroke: #aaa;
+  stroke-width: 2;
 }

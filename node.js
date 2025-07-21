@@ -1,4 +1,4 @@
-class Node {
+export class Node {
     constructor(game, numChildren){
         this.game = game;
         this.numChildren = numChildren;
