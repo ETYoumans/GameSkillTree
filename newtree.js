@@ -1,10 +1,5 @@
 import {Node} from "./node.js"
 import {Tree} from "./tree.js"
-//import {fetchGame, fetchRandomGame} from "./steam.js"
-
-const options = {
-    steam: true
-}
 
 function reviveNode(obj) {
   const node = new Node(obj.game, obj.numChildren);
@@ -51,6 +46,6 @@ export function newTree(treeName, gameNames) {
     }
     
     let tree = new Tree(root, treeName);
-    return root;
+    return tree;
     //saveTree(tree);
 }

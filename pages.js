@@ -8,11 +8,9 @@ const staticGames = [
   "Terraria", "Hades", "Stardew Valley", "Animal Crossing", "Mario Sunshine"
 ];
 
-let root = newTree("1", [...staticGames]);
+let tree = newTree("1", [...staticGames]);
 
 const container = document.getElementById("treeContainer");
-
-const newUserForm = `<p>New User Form</p>`;
 
 const newTreeForm = `
 <form id="treeForm">
@@ -98,6 +96,6 @@ document.getElementById("newTree").addEventListener("click", () => {
 document.getElementById("displayTree").addEventListener("click", () => {
   container.innerHTML = displayTreeHTML;
   requestAnimationFrame(() => {
-    render(root);
+    render(tree.root, tree);
   });
 });

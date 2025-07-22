@@ -2,14 +2,11 @@ Game Skill Tree:
 
 To Do List:
 
-1. Add Game images to renderer (maybe not, if not, design nodes better)
-2. Create game box in sidebar. I want to click the game on the tree. It will show up in the gamebox container. 
-It will have an image and a button. The button will say unlock if it is locked, or beaten if it is unlocked.
-3. Add point counter and spender, checks for points before unlocks.
-4. Use a game db API to get game images. 
-5. Fix form to add platform to each game.
-6. Add panning and zoom to tree container.
-7. Fixed UI and CSS
+1. Add game images to gamebox and cache
+2. Use a game db API to get game images. 
+3. Fix form to add platform to each game.
+4. Add panning and zoom to tree container.
+5. Fixed UI and CSS
 
 ## Disclaimer
 
