@@ -6,32 +6,28 @@
 </head>
 <body>
   <div id="app">
-
+    <div class="points" id="points">
+      
+    </div>
     <div class="sidebar" id="sidebar">
-        <h1>Game Skill Tree</h1>
-        <div id="points">
-            <strong>Points:</strong> <span id="pointCount">0</span>
-
-            <br><br>
-            <button id="newTree">New Tree</button>
-            <br><br>
-            <button id="displayTree">Display Tree</button>
-
-            <div class="gameContainer" id="gameContainer">
-              <div class="titleContainer" id="titleContainer"></div>
-              <div class="imageContainer" id="imageContainer"></div>
-              <div class="buttonContainer" id="buttonContainer"></div>
-            </div>
-
-
+        <div class="titleWrapper">
+          <div class="titleContainer" id="titleContainer"></div>
+          <div class="gameContainer" id="gameContainer">
+            <div class="imageContainer" id="imageContainer"></div>
+            <div class="buttonContainer" id="buttonContainer"></div>
+          </div>
+        </div>
+        <select class="selectTree" id="selectTree"></select>
+        <div class="bottombuttons">
+          <button id="newTree">New Tree</button>
+          <button id="deleteTrees">Delete</button>
         </div>
     </div>
-
     <div class="treeContainer" id="treeContainer">
-        
+      <svg id="tree" width="100%" height="100%">
+        <g id="treeGroup"></g>
+      </svg>
     </div>
-
-
   </div>
   <script type="module" src="pages.js"></script>
 </body>
