@@ -1,28 +1,43 @@
 import { renderGameBox } from "./gameContainer.js";
-
+import { saveTree } from "./newtree.js";
 const nodeRadius = 30;
-
+const k = 1;
 
 function drawNode(svg, x,y, name, node, root, render, tree){
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    circle.setAttribute("cx", x);
-    circle.setAttribute("cy", y);
-    circle.setAttribute("r", nodeRadius);
+    const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    ellipse.setAttribute("cx", x);
+    ellipse.setAttribute("cy", y);
+    ellipse.setAttribute("r", nodeRadius*k);
 
     if(node.locked){
-        circle.classList.add("lockedNode");
+        ellipse.classList.add("lockedNode");
     }
     else{
-        circle.classList.add("node");
+        if (node.completed){
+            ellipse.classList.add("node");
+        }
+        else {
+            ellipse.classList.add("currentNode")
+        }
+        
     }
     
-    g.appendChild(circle);
+    g.appendChild(ellipse);
 
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
     text.setAttribute("x", x);
     text.setAttribute("y", y + 4);
-    text.textContent = name;
+    text.setAttribute("textLength", 2*k*nodeRadius - 2*k);
+    text.setAttribute("lengthAdjust", "spacingAndGlyphs");
+    
+    let temp = name;
+    if(name.length > 20){
+        temp = name.substring(0,17) + "...";
+    }
+    
+    text.textContent = temp;
+    
     text.classList.add("label");
     g.appendChild(text);
 
@@ -63,15 +78,78 @@ function draw(svg, node, x, y, depth = 1, angleStart = 0, angleEnd = 2 * Math.PI
 }
 
 export function render(root, tree){
-    const pointContainer = document.getElementById("pointCount");
+    const points = document.getElementById("points");
     const svg = document.getElementById("tree");
+    const group = document.getElementById("treeGroup");
     const container = document.getElementById("treeContainer");
     const bounds = container.getBoundingClientRect();
     const centerX = bounds.width / 2;
     const centerY = bounds.height / 2;
-    pointContainer.innerHTML = tree.points;
 
-    svg.innerHTML = "";
-    draw(svg, root, centerX, centerY, 1, 0, 2*Math.PI, root, render, tree);
+    requestAnimationFrame(() => {
+        if(tree.points > 0){
+            
+            points.innerHTML = "Unlock Available!";
+        }
+        else {
+            points.innerHTML = "";
+        }
+        saveTree(tree);
 
+        group.innerHTML = "";
+        draw(group, root, centerX, centerY, 1, 0, 2 * Math.PI, root, render, tree);
+        panAndZoom();
+    });
+    
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  panAndZoom();
+});
+
+function panAndZoom(){
+    const svg = document.getElementById("tree");
+    const group = document.getElementById("treeGroup");
+
+    let isPanning = false;
+    let startX = 0;
+    let startY = 0;
+    let translateX = 0;
+    let translateY = 0;
+    let scale = 1;
+
+    svg.addEventListener("mousedown", (e) => {
+        isPanning = true;
+        startX = e.clientX;
+        startY = e.clientY;
+    });
+
+    svg.addEventListener("mousemove", (e) => {
+        if (!isPanning) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            translateX += dx;
+            translateY += dy;
+            startX = e.clientX;
+            startY = e.clientY;
+            updateTransform();
+    });
+
+    svg.addEventListener("mouseup", () => { isPanning = false; });
+    svg.addEventListener("mouseleave", () => { isPanning = false; });
+
+    svg.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        const zoomFactor = 0.1;
+        const direction = e.deltaY > 0 ? -1 : 1;
+        scale += direction * zoomFactor;
+        scale = Math.max(0.1, Math.min(5, scale)); // clamp scale
+        updateTransform();
+    }, {passive: false});
+
+    function updateTransform() {
+    group.setAttribute("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
+    }
+}
+
+

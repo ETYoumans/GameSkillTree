@@ -1,46 +1,53 @@
+import {saveTree} from "./newtree.js"
+
 const titleContainer = document.getElementById("titleContainer");
 const imageContainer = document.getElementById("imageContainer");
 const buttonContainer = document.getElementById("buttonContainer");
-const pointContainer = document.getElementById("pointCount");
+const points = document.getElementById("points");
+import { returnImage } from "./steam.js";
 
 function displayTitle(title){
     titleContainer.innerHTML = `<h1>${title}</h1>`
 }
 
-function displayImage(title){
-
+async function displayImage(title){
+    let image = await returnImage(title);
+    imageContainer.innerHTML = `<img src=${image} s />`
 }
 
 function displayButtons(svg, node, tree, root, render){
     buttonContainer.innerHTML = "";
     if(node.locked){
-        buttonContainer.innerHTML = `<button type="button" id="unlockButton">Unlock</button>`;
+        buttonContainer.innerHTML = `<button type="button" id="unlockButton">UNLOCK</button>`;
         unlockButton.addEventListener("click", () => {
             if(tree.points > 0){
                 tree.points -= 1;
                 node.unlock();
                 svg.innerHTML = "";
                 render(root, tree);
+                displayButtons(svg, node, tree, root, render);
             }
             else{
                 console.log("Not enough points");
             }
+            saveTree(tree);
             
         });
     }
     else if(!node.completed){
-        buttonContainer.innerHTML = `<button type="button" id="completeButton">Complete</button>`;
+        buttonContainer.innerHTML = `<button type="button" id="completeButton">COMPLETE</button>`;
         completeButton.addEventListener("click", () => {
             if(!node.completed){
                 tree.points += 1;
-                pointContainer.innerHTML = tree.points;
                 node.completed = true;
-                buttonContainer.innerHTML = `<h3>COMPLETED!</h3>`;
+                render(root, tree);
+                displayButtons(svg, node, tree, root, render);
+
             }
         });
     }
     else{
-        buttonContainer.innerHTML = `<h3>COMPLETED!</h3>`;
+        buttonContainer.innerHTML = `<h3>COMPLETED</h3>`;
     }
 }
 

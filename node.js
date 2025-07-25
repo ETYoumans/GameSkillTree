@@ -1,17 +1,20 @@
 export class Node {
-    constructor(game, numChildren){
+    constructor(game, numChildren, locked, completed){
         this.game = game;
-        this.locked = true;
-        this.completed = false;
+        this.locked = locked;
+        this.completed = completed;
         this.numChildren = numChildren;
         this.children = [];
     }
 
-    push(game){
-        this.children.push(game);
+    push(node){
+        if (!(node instanceof Node)) {
+            throw new Error("Only Node instances can be pushed as children.");
+        }
+        this.children.push(node);
     }
 
     unlock(){
         this.locked = false;
     }
-}
+}p
