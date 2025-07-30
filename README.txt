@@ -2,11 +2,19 @@ Game Skill Tree:
 
 To Do List:
 
-1. Add game images to gamebox and cache
-2. Use a game db API to get game images. 
-3. Fix form to add platform to each game.
-4. Add panning and zoom to tree container.
-5. Fixed UI and CSS
+1. Save files transfer for updates
+2. Fix screen scaling of text and image
+3. Fix Add Game UI
+4. Add optional notes section (maybe hover to see notes)
+5. Completion Check and Reward
+6. Optional Two Game Start
+7. Fix further layers issues
+8. Upload Custom images
+9. Share tree state
+10. Fix API key for launch on github (add api key section to upload key or environmental variables for it)
+11. Add custom icon
+12. Make it more robust
+13. Fix read me to be informative to user
 
 ## Disclaimer
 
