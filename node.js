@@ -17,4 +17,4 @@ export class Node {
     unlock(){
         this.locked = false;
     }
-}p
+}
