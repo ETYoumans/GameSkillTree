@@ -59,7 +59,7 @@ async function getSteamApp(gameName){
 }
 
 async function getRAWG(gameName) {
-  const API_KEY = '***REMOVED***';
+  const API_KEY = await window.electronAPI.getApiKey();
   
   const url = `https://api.rawg.io/api/games?key=${API_KEY}&search=${encodeURIComponent(gameName)}`;
 
