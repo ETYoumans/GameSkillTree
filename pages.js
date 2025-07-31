@@ -11,8 +11,6 @@ const displayTreeHTML = `
 
 
 const container = document.getElementById("treeContainer");
-let tree = null;
-let trees = loadTrees();
 let selectedName = "";
 updateSelect();
 
@@ -51,9 +49,9 @@ const newTreeForm = `
 
 document.getElementById("deleteTrees").addEventListener("click", () => {
     if(confirm("Aree you sure you want to permanently delete this tree?")){
-      trees = loadTrees();
+      
       deleteTree(selectedName);
-      trees = loadTrees();
+      
       requestAnimationFrame(() => {
         container.innerHTML = "";
         updateSelect();
@@ -75,7 +73,7 @@ document.getElementById("selectTree").addEventListener("change", selectTreeHandl
 document.getElementById("selectTree").addEventListener("click", selectTreeHandler);
 
 function selectTreeHandler(){
-  trees = loadTrees();
+
   selectedName = event.target.value;
 
   if(selectedName == null || selectedName == ""){
@@ -172,7 +170,6 @@ function displayTree(){
 function updateSelect(){
   let temp = ``;
   
-  trees = loadTrees();
   if(trees.length == 0){
     document.getElementById("selectTree").innerHTML = "<option value='nothing'>No Trees Loaded</option>";
     return;

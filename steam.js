@@ -8,12 +8,10 @@ function loadCache() {
   return data ? new Map(Object.entries(JSON.parse(data))) : new Map();
 }
 const imageCache = loadCache();
-console.log(imageCache);
 
 export async function returnImage(gameName){
 
     if(imageCache.has(gameName)){
-        console.log("Used Cache");
         return imageCache.get(gameName);
     }
 
@@ -59,7 +57,7 @@ async function getSteamApp(gameName){
 }
 
 async function getRAWG(gameName) {
-  const API_KEY = await window.electronAPI.getApiKey();
+  const API_KEY = await window.treeAPI.getApiKey();
   
   const url = `https://api.rawg.io/api/games?key=${API_KEY}&search=${encodeURIComponent(gameName)}`;
 
