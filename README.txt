@@ -3,7 +3,7 @@ Game Skill Tree:
 To Do List:
 
 1. Save files transfer for updates
-2. Fix screen scaling of text and image
+YES 2. Fix screen scaling of text and image
 3. Fix Add Game UI
 4. Add optional notes section (maybe hover to see notes)
 5. Completion Check and Reward
@@ -15,6 +15,7 @@ To Do List:
 11. Add custom icon
 12. Make it more robust
 13. Fix read me to be informative to user
+
 
 ## Disclaimer
 

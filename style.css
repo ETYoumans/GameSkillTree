@@ -62,7 +62,7 @@ line {
 }
 
 .titleContainer h1 {
-  font-size: 50px;
+  font-size: clamp(1px, calc(1.42*(-4px + 3vw)), 50px);
   line-height: 50px;
   color: black;
   font-family: Impact, sans-serif;
@@ -75,8 +75,8 @@ line {
 }
 
 .imageContainer img {
-  width: 350px;
-  height: 525px;
+  width: 19vw;
+  height: 28.5vw;
   object-fit: cover;
 }
 
@@ -92,13 +92,13 @@ line {
 .buttonContainer h3 {
   transform: translateX(-33%) translateY(100%);
   font-family: Impact, sans-serif;
-  font-size: 70px;
+  font-size: clamp(1px, calc(2*(-4px + 3vw)), 70px);
   -webkit-text-fill-color: #ff0000;
 }
 
 .buttonContainer button {
   font-family: Impact, sans-serif;
-  font-size:35px;
+  font-size: clamp(1px, calc(-4px + 3vw), 35px);
 }
 
 .bottombuttons {
@@ -115,7 +115,7 @@ line {
   width: 50%;
   height: 100%;
 
-  font-size:35px;
+  font-size: clamp(1px, calc(-4px + 3vw), 35px);
 }
 
 .selectTree {
@@ -125,7 +125,7 @@ line {
   width:18%;
   height:10%;
   text-align: center;
-  font-size:35px;
+  font-size:clamp(1px, calc(-4px + 3vw), 35px);
 }
 
 .points {
@@ -136,7 +136,7 @@ line {
   z-index: 50;
   text-align: center;
   font-family: Impact, sans-serif;
-  font-size:70px;
+  font-size:clamp(2px, calc(2*(-4px + 3vw)), 70px);
 }
 
 .treeForm{
@@ -153,38 +153,39 @@ line {
 
 
 .treeForm label {
-  font-size: 35px;
+  font-size:clamp(1px, calc(-4px + 3vw), 35px);
   color: #f0f0f0;
   padding-bottom: 10p;
 }
 
 .treeForm input {
-  font-size: 35px;
+  font-size:clamp(1px, calc(-4px + 3vw), 35px);
+
   width: 17vw;
 }
 
 .treeForm button {
-  font-size: 35px;
+  font-size: clamp(1px, calc(-4px + 3vw), 35px);
   font-family: Impact, sans-serif;
   width: 17vw;
   height: 5vh;
 }
 
 .treeForm strong {
-  font-size: 35px;
+  font-size: clamp(1px, calc(-4px + 3vw), 35px);
   color: #f0f0f0;
   padding-left: 25px;
 }
 
 .treeForm ul {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.01vw;
   list-style-position: none;
   width: 100%;
   height: 100%;
   float: left;
-  font-size: 30px;
+  font-size: clamp(1px, calc(-4px + 3vw), 35px);
   color: #f0f0f0;
-  padding-left: 100px
+  padding-left: 0.1vw;
 }
