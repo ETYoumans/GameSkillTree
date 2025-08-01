@@ -14,3 +14,8 @@ export async function delete_tree(treeName){
         console.log("Error: Failed to delete");
     }
 }
+
+export async function list_trees(){ 
+    var list = await window.treeAPI.listdir();
+    return list;
+}

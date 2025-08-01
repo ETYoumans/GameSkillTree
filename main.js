@@ -6,11 +6,11 @@ const { electron } = require('process');
 const treeManager = require('./file_manager.js');
 
 require('electron-reload')(__dirname, {
-  electron: require(`${__dirname}/node_modules/electron`)
+  electron: require(`${__dirname}/node_modules/electron`),
+  ignored: /trees|[\/\\]\./
 })
 
 dotenv.config();
-console.log('Preload path:', path.join(__dirname, 'preload.js'));
 app.whenReady().then(() => {
   
   const win = new BrowserWindow({ 
@@ -38,4 +38,12 @@ ipcMain.handle('tree:read', async (_, treename) => {
 ipcMain.handle('tree:write', async (_, treename, data) => {
   treeManager.write(treename, data);
   return true;
+});
+
+ipcMain.handle('tree:listdir', () => {
+  return treeManager.listdir();
+});
+
+ipcMain.handle('tree:delete', async (_, treename) => {
+  return treeManager.del(treename);
 });

@@ -1,7 +1,7 @@
 //const { Node } = require('./treenode.js');
 import { Node } from './treenode.js';
 import { Tree } from "./tree.js";
-import { read_tree, write_tree, delete_tree } from "./file_helper.js";
+import { read_tree, write_tree, delete_tree, list_trees } from "./file_helper.js";
 
 function reviveNode(obj) {
   if (!obj || typeof obj !== 'object') {
@@ -15,9 +15,8 @@ function reviveNode(obj) {
   return node;
 }
 
-export function loadTrees(treeName) {
+export function loadTree(treeName) {
   const parsed = read_tree(treeName);
-  console.log(parsed);
   return parsed.map(obj => {
     const root = reviveNode(obj.root);
     const tree = new Tree(root, obj.treename);
@@ -26,8 +25,12 @@ export function loadTrees(treeName) {
   });
 }
 
-export function saveTree(tree) {
-  write_tree(tree.treename, tree);
+export function loadList(){
+  return list_trees();
+}
+
+export async function saveTree(tree) {
+  await write_tree(tree.treename, tree);
 }
 
 export function newTree(treeName, gameNames) {

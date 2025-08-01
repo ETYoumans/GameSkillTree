@@ -34,8 +34,29 @@ function del(treename) {
     return false;
 }
 
+async function listdir(){
+    let folder = path.join(__dirname, 'trees');
+    let exists = fs.existsSync(folder);
+
+    if(!exists){
+        console.error("Tree Folder does not exist");
+        return [];
+    }
+
+    let list = [];
+    try {
+        list = await fs.promises.readdir(folder);
+        return list;
+    }
+    catch (err) {
+        console.error('Failed to read dir:', err);
+        return list;
+    }
+}
+
 module.exports = {
     read,
     write,
-    del
+    del,
+    listdir,
 };

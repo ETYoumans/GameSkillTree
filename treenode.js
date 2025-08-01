@@ -13,8 +13,4 @@ export class Node {
         }
         this.children.push(node);
     }
-
-    unlock(){
-        this.locked = false;
-    }
 }
