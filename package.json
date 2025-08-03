@@ -4,17 +4,19 @@
   "description": "Game Skill Tree:",
   "main": "main.js",
   "scripts": {
-    "start": " ./node_modules/.bin/electron .",
+    "start": "electron .",
     "package": "electron-packager . GameSkillTree --platform=win32 --arch=x64 --overwrite"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^37.2.4",
-    "electron-packager": "^17.1.2"
+    "electron": "^37.2.5",
+    "electron-packager": "^17.1.2",
+    "electron-reload": "^2.0.0-alpha.1"
   },
   "dependencies": {
+    "@coreui/icons": "^3.0.1",
     "boolean": "^3.2.0",
     "buffer-crc32": "^0.2.13",
     "cacheable-lookup": "^5.0.4",

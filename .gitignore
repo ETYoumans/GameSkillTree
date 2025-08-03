@@ -4,3 +4,6 @@
 # Node modules (common for Node/Electron projects)
 node_modules/
 
+# Saved Trees
+trees/
+

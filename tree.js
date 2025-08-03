@@ -1,7 +1,10 @@
 export class Tree {
-    constructor(root, treename){
+    constructor(root, treename, numGamesTotal, layers){
         this.root = root;
         this.treename = treename;
-        this.points = 1;
+        this.layers = layers;
+        this.points = 2;
+        this.numGamesTotal = numGamesTotal;
+        this.numCompleted = 0;
     }
 }

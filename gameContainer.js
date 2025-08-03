@@ -22,7 +22,7 @@ function displayButtons(svg, node, tree, root, render){
         unlockButton.addEventListener("click", () => {
             if(tree.points > 0){
                 tree.points -= 1;
-                node.unlock();
+                node.locked = false;
                 svg.innerHTML = "";
                 render(root, tree);
                 displayButtons(svg, node, tree, root, render);

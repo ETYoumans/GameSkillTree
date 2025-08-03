@@ -8,12 +8,10 @@ function loadCache() {
   return data ? new Map(Object.entries(JSON.parse(data))) : new Map();
 }
 const imageCache = loadCache();
-console.log(imageCache);
 
 export async function returnImage(gameName){
 
     if(imageCache.has(gameName)){
-        console.log("Used Cache");
         return imageCache.get(gameName);
     }
 
@@ -44,22 +42,33 @@ async function getSteamApp(gameName){
     const proxy = "https://corsproxy.io/?";
     const url = `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(gameName)}&cc=us&l=en`;
 
-    const res = await fetch(proxy + encodeURIComponent(url));
-    const data = await res.json();
+    try{
+      const res = await fetch(proxy + encodeURIComponent(url));
+      const data = await res.json();
 
-    if(data.items && data.items.length > 0){
-        const app = data.items[0];
-        console.log(app);
-        console.log(app.id);
-        return `https://cdn.cloudflare.steamstatic.com/steam/apps/${app.id}/library_600x900.jpg`
+      if(data.items && data.items.length > 0){
+          const imgUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${app.id}/library_600x900.jpg`
+          const imgRes = await fetch(imageUrl, { method: 'HEAD' })
+          if(imgRes.ok){
+            return imgUrl;
+          }
+          else{
+            return null;
+          }
+      }
+      else {
+          return null;
+      }
+    } catch (err){
+      console.log(err);
+      return null;
     }
-    else {
-        return null;
-    }
+
+
 }
 
 async function getRAWG(gameName) {
-  const API_KEY = await window.electronAPI.getApiKey();
+  const API_KEY = await window.treeAPI.getApiKey();
   
   const url = `https://api.rawg.io/api/games?key=${API_KEY}&search=${encodeURIComponent(gameName)}`;
 
