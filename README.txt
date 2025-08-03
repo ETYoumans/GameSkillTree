@@ -10,8 +10,6 @@ YES
 
 Important
 
-Fix delete tree!!!
-
 3. Fix Add Game UI
 4. Add optional notes section (maybe hover to see notes) maybe add it as a subtitle?
 5. Completion Check and Reward

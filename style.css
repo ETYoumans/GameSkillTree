@@ -1,3 +1,7 @@
+body::-webkit-scrollbar {
+  display: none;
+}
+
 
 html {
     background-color: #0B203B;
@@ -5,10 +9,11 @@ html {
 
 #treeContainer {
   position: relative;
-  width: 75%;
-  height: 90vh;
+  width: 80vw;
+  height: 100vh;
   left: 10%;
   margin: 1em auto;
+  overflow: hidden;
 }
 
 svg#tree {
@@ -23,7 +28,7 @@ svg#tree {
 }
 
 .lockedNode {
-  fill: #aaa;
+  fill: #737272;
   stroke: #333;
   stroke-width: 1;
 }
@@ -32,6 +37,10 @@ svg#tree {
   fill: #65ec0a;
   stroke: #333;
   stroke-width: 1;
+}
+
+.root {
+  fill: #42ffff;
 }
 
 .label {
@@ -92,7 +101,7 @@ line {
 .buttonContainer h3 {
   transform: translateX(-33%) translateY(100%);
   font-family: Impact, sans-serif;
-  font-size: clamp(1px, calc(2*(-4px + 3vw)), 70px);
+  font-size: clamp(1px, calc(0.964px + 3.596vw), 70px);
   -webkit-text-fill-color: #ff0000;
 }
 

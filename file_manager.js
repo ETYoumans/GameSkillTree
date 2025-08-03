@@ -25,13 +25,20 @@ function write(treename, jsonString) {
     fs.writeFileSync(filePath, jsonString, 'utf8');
 }
 
-function del(treename) {
+async function del(treename) {
     const filePath = getFullPath(treename);
-    if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-        return true;
+
+    if(!fs.existsSync(filePath)){
+        return `File not found: $(filePath)`;
     }
-    return false;
+
+     try {
+        fs.unlinkSync(filePath);
+        return "Successful deletion";
+    } catch (err) {
+        return `Failed to delete: ${err.message}`;
+    }
+
 }
 
 async function listdir(){

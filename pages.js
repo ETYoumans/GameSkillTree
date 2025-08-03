@@ -26,6 +26,7 @@ const newTreeBtn = document.getElementById("newTree");
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
+   console.log("Renderer loaded!");
    attachEventListeners();
    attachTreeSelectHandlers();
    populateTreeSelect();
@@ -164,7 +165,7 @@ async function handleDeleteTree() {
   const confirmed = confirm("Are you sure you want to permanently delete this tree?");
   if (!confirmed) return;
 
-  await deleteTree(state.selected);
+  await deleteTree(state.selectedTreeName);
 
   state.selectedTreeName = "";
   state.currentTree = null;

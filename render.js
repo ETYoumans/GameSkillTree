@@ -1,51 +1,68 @@
 import { renderGameBox } from "./gameContainer.js";
 import { saveTree } from "./newtree.js";
 const nodeRadius = 30;
-const k = 1;
+const K = 1;
 
 function drawNode(svg, x,y, name, node, root, render, tree){
-    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    ellipse.setAttribute("cx", x);
-    ellipse.setAttribute("cy", y);
-    ellipse.setAttribute("r", nodeRadius*k);
 
-    if(node.locked){
-        ellipse.classList.add("lockedNode");
+    if(node.first){
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        const diamond = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        let y1 = K*(y + nodeRadius);
+        let y2 = K*(y - nodeRadius);
+        let x1 = K*(x + nodeRadius);
+        let x2 = K*(x - nodeRadius);
+
+        let points = `${x},${y1} ${x1},${y} ${x},${y2} ${x2},${y}`;
+        diamond.setAttribute('points', points);
+
+        diamond.classList.add("root");
+        g.appendChild(diamond);
+        svg.appendChild(g);
     }
     else{
-        if (node.completed){
-            ellipse.classList.add("node");
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        ellipse.setAttribute("cx", x);
+        ellipse.setAttribute("cy", y);
+        
+        ellipse.setAttribute("r", nodeRadius*K);
+
+        if(node.locked){
+            ellipse.classList.add("lockedNode");
         }
-        else {
-            ellipse.classList.add("currentNode")
+        else{
+            if (node.completed){
+                ellipse.classList.add("node");
+            }
+            else {
+                ellipse.classList.add("currentNode")
+            }
         }
         
+        g.appendChild(ellipse);
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", x);
+        text.setAttribute("y", y + 4);
+        text.setAttribute("textLength", 2*K*nodeRadius - 2*K);
+        text.setAttribute("lengthAdjust", "spacingAndGlyphs");
+        
+        let temp = name;
+        if(name.length > 20){
+            temp = name.substring(0,17) + "...";
+        }
+        
+        text.textContent = temp;
+        text.classList.add("label");
+        g.appendChild(text);
+
+        g.addEventListener("click", () => {
+            renderGameBox(svg, tree, node, root, render);
+        })
+
+        svg.appendChild(g);
     }
-    
-    g.appendChild(ellipse);
-
-    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute("x", x);
-    text.setAttribute("y", y + 4);
-    text.setAttribute("textLength", 2*k*nodeRadius - 2*k);
-    text.setAttribute("lengthAdjust", "spacingAndGlyphs");
-    
-    let temp = name;
-    if(name.length > 20){
-        temp = name.substring(0,17) + "...";
-    }
-    
-    text.textContent = temp;
-    
-    text.classList.add("label");
-    g.appendChild(text);
-
-    g.addEventListener("click", () => {
-        renderGameBox(svg, tree, node, root, render);
-    })
-
-    svg.appendChild(g);
 }
 
 function drawLine(svg, x1, y1, x2, y2) {
@@ -57,23 +74,44 @@ function drawLine(svg, x1, y1, x2, y2) {
   svg.appendChild(line);
 }
 
-function draw(svg, node, x, y, depth = 1, angleStart = 0, angleEnd = 2 * Math.PI, root, render, tree) {
+function draw(svg, node, parentX, parentY, depth, root, render, tree, layers, centerX, centerY) {
+    if (layers[depth] === undefined) layers[depth] = 0;
+    if(node.children.length == 0){
+        return;
+    }
+    const angleStep = 2*Math.PI / tree.layers[depth + 1];
+    if (!tree.layers[depth]) {
+        console.warn(`Invalid tree.layers[${depth}]`, tree.layers);
+        return;
+    }
     const children = node.children || [];
-    const angleStep = (angleEnd - angleStart) / Math.max(children.length, 1);
-    const radius = 80 * depth;
+
+    let k = 2;
+    const ringRadius = ((k*depth)+1) * nodeRadius * 5;
+    console.log(`Depth: ${depth}, Layers[depth]: ${layers[depth]}, AngleStep: ${angleStep}`);
+    console.log(`centerX: ${centerX}, centerY: ${centerY}`);
 
     if(!node.locked){
+        const startIndex = layers[depth];
         children.forEach((child, i) => {
-        const angle = angleStart + i * angleStep + angleStep / 2;
-        const offset = 50
-        const childX = x + (radius + offset) * Math.cos(angle);
-        const childY = y + (radius + offset) * Math.sin(angle);
-        drawLine(svg, x, y, childX, childY);
-        draw(svg, child, childX, childY, depth + 1, angle - angleStep / 2, angle + angleStep / 2, root, render, tree);
-    });
+            const angle = angleStep * (startIndex + i) - Math.PI / 2;
+            const normalizedAngle = ((angle % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
+            const childX = centerX + ringRadius * Math.cos(normalizedAngle);
+            const childY = centerY + ringRadius * Math.sin(normalizedAngle);
+
+            console.log(`Normalized Angle: ${normalizedAngle}, ChildX: ${childX}, ChildY: ${childY}`);
+
+
+            if(child.children.length > 0){
+                drawLine(svg, parentX, parentY, childX, childY);
+            }
+            
+            
+            draw(svg, child, childX, childY, depth + 1, root, render, tree, layers, centerX, centerY);
+        });
     }
-    
-    drawNode(svg, x, y, node.game, node, root, render, tree);
+    layers[depth] += children.length;
+    drawNode(svg, parentX, parentY, node.game, node, root, render, tree);
 
 }
 
@@ -97,7 +135,8 @@ export function render(root, tree){
         saveTree(tree);
 
         group.innerHTML = "";
-        draw(group, root, centerX, centerY, 1, 0, 2 * Math.PI, root, render, tree);
+
+        draw(group, root, centerX, centerY, 0, root, render, tree, [], centerX, centerY);
         panAndZoom();
     });
     
@@ -143,7 +182,7 @@ function panAndZoom(){
         const zoomFactor = 0.1;
         const direction = e.deltaY > 0 ? -1 : 1;
         scale += direction * zoomFactor;
-        scale = Math.max(0.1, Math.min(5, scale)); // clamp scale
+        scale = Math.max(0.1, Math.min(5, scale));
         updateTransform();
     }, {passive: false});
 
