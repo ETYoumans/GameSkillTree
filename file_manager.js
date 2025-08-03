@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const readline = require('readline');
 
 const _dir = path.join(__dirname, 'trees');
 const _ext = '.json';
@@ -61,9 +62,54 @@ async function listdir(){
     }
 }
 
+async function txtReader(upload){
+    let exists = fs.existsSync(upload);
+    if(!exists){
+        console.error(`File (${upload}) cannot be read`);
+        return null;
+    }
+
+    if(!upload.endsWith(".txt")){
+        console.error(`File (${upload}) needs ".txt" extension`);
+        return null;
+    }
+
+    const file = readline.createInterface({input: fs.createReadStream(upload)});
+
+    let treeName = "";
+    let gameNames = [];
+
+    return new Promise((resolve, reject) => {
+        file.on('line', (line) => {
+            while(line.endsWith(" ")){
+                line = line.slice(0,-1);
+            }
+            while(line.startsWith(" ")){
+                line = line.slice(1);
+            }
+
+            if (treeName === "") {
+                treeName = line;
+            } else {
+                gameNames.push(line);
+            }
+        });
+
+        file.on('close', () => {
+            resolve({ treename: treeName, gamenames: gameNames });
+        });
+
+        file.on('error', (err) => {
+            reject(err);
+        });
+    });
+
+}
+
 module.exports = {
     read,
     write,
     del,
     listdir,
+    txtReader,
 };

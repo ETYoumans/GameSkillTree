@@ -3,6 +3,10 @@ import { saveTree } from "./newtree.js";
 const nodeRadius = 30;
 const K = 1;
 
+const layoutMap = new Map();
+let currentRoot = null;
+let currentTree = null;
+
 function drawNode(svg, x,y, name, node, root, render, tree){
 
     if(node.first){
@@ -74,55 +78,111 @@ function drawLine(svg, x1, y1, x2, y2) {
   svg.appendChild(line);
 }
 
-function draw(svg, node, parentX, parentY, depth, root, render, tree, layers, centerX, centerY) {
-    if (layers[depth] === undefined) layers[depth] = 0;
-    if(node.children.length == 0){
-        return;
-    }
-    const angleStep = 2*Math.PI / tree.layers[depth + 1];
-    if (!tree.layers[depth]) {
-        console.warn(`Invalid tree.layers[${depth}]`, tree.layers);
-        return;
-    }
-    const children = node.children || [];
+function draw(svg, node, root, render, tree) {
+    const parentPos = layoutMap.get(node);
+    let parentX = parentPos.x;
+    let parentY = parentPos.y;
+ 
 
-    let k = 2;
-    const ringRadius = ((k*depth)+1) * nodeRadius * 5;
-    console.log(`Depth: ${depth}, Layers[depth]: ${layers[depth]}, AngleStep: ${angleStep}`);
-    console.log(`centerX: ${centerX}, centerY: ${centerY}`);
-
+    let children = node.children;
     if(!node.locked){
-        const startIndex = layers[depth];
-        children.forEach((child, i) => {
-            const angle = angleStep * (startIndex + i) - Math.PI / 2;
-            const normalizedAngle = ((angle % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
-            const childX = centerX + ringRadius * Math.cos(normalizedAngle);
-            const childY = centerY + ringRadius * Math.sin(normalizedAngle);
+        children.forEach((child) => {
 
-            console.log(`Normalized Angle: ${normalizedAngle}, ChildX: ${childX}, ChildY: ${childY}`);
+            const childPos = layoutMap.get(child);
+            let childX = childPos.x;
+            let childY = childPos.y;
 
-
-            if(child.children.length > 0){
-                drawLine(svg, parentX, parentY, childX, childY);
-            }
+            drawLine(svg, parentX, parentY, childX, childY);
             
-            
-            draw(svg, child, childX, childY, depth + 1, root, render, tree, layers, centerX, centerY);
+            draw(svg, child, root, render, tree);
         });
     }
-    layers[depth] += children.length;
     drawNode(svg, parentX, parentY, node.game, node, root, render, tree);
 
+}
+
+let rootX = 0;
+let rootY = 0;
+
+
+export function prerender(root, tree) {
+    currentRoot = root;
+    currentTree = tree;
+    calculateLayout();
+}
+
+function calculateLayout(){
+    if (!currentRoot || !currentTree) return;
+    layoutMap.clear();
+
+    let tree = currentTree;
+    let root = currentRoot;
+
+    const container = document.getElementById("treeContainer");
+    const bounds = container.getBoundingClientRect();
+    const centerX = bounds.width / 2;
+    const centerY = bounds.height / 2;
+    const counters = Array(tree.layers.length).fill(0);
+    rootX = centerX;
+    rootY = centerY;
+
+    
+
+
+function recurse(node, depth) {
+  let x, y;
+
+  if (depth === 0) {
+    x = centerX;
+    y = centerY;
+  } else {
+    const total = currentTree.layers[depth];
+    const index = counters[depth]++;
+    const angleStep = 2 * Math.PI / total;
+    const angle = angleStep * index - Math.PI / 2;
+
+    let k=2;
+    if(depth < 3){
+        k=1.5;
+    }
+    const radius = ((k * depth) + 1) * nodeRadius * 5;
+    
+    x = centerX + radius * Math.cos(angle);
+    y = centerY + radius * Math.sin(angle);
+  }
+
+  layoutMap.set(node, { x, y });
+
+  node.children.forEach(child => recurse(child, depth + 1));
+}
+
+    recurse(root, 0);
+}
+
+window.addEventListener("resize", () => {
+    if (!currentRoot || !currentTree) return;
+    calculateLayout();
+    rerender();
+});
+
+export function rerender() {
+    if (!currentRoot || !currentTree) return;
+    render(currentRoot, currentTree);
 }
 
 export function render(root, tree){
     const points = document.getElementById("points");
     const svg = document.getElementById("tree");
     const group = document.getElementById("treeGroup");
+
     const container = document.getElementById("treeContainer");
     const bounds = container.getBoundingClientRect();
     const centerX = bounds.width / 2;
     const centerY = bounds.height / 2;
+
+    translateX = centerX - rootX;
+    translateY = centerY - rootY;
+    scale = 1;
 
     requestAnimationFrame(() => {
         if(tree.points > 0){
@@ -136,7 +196,7 @@ export function render(root, tree){
 
         group.innerHTML = "";
 
-        draw(group, root, centerX, centerY, 0, root, render, tree, [], centerX, centerY);
+        draw(group, root, root, render, tree);
         panAndZoom();
     });
     
@@ -146,6 +206,12 @@ document.addEventListener("DOMContentLoaded", () => {
   panAndZoom();
 });
 
+
+
+let translateX = 0;
+let translateY = 0;
+let scale = 1;
+
 function panAndZoom(){
     const svg = document.getElementById("tree");
     const group = document.getElementById("treeGroup");
@@ -153,9 +219,15 @@ function panAndZoom(){
     let isPanning = false;
     let startX = 0;
     let startY = 0;
-    let translateX = 0;
-    let translateY = 0;
-    let scale = 1;
+
+    const container = document.getElementById("treeContainer");
+    const bounds = container.getBoundingClientRect();
+    const centerX = bounds.width / 2;
+    const centerY = bounds.height / 2;
+
+    translateX = centerX - rootX;
+    translateY = centerY - rootY;
+
 
     svg.addEventListener("mousedown", (e) => {
         isPanning = true;
@@ -181,14 +253,44 @@ function panAndZoom(){
         e.preventDefault();
         const zoomFactor = 0.1;
         const direction = e.deltaY > 0 ? -1 : 1;
+
+        const mouseX = e.clientX - bounds.left;
+        const mouseY = e.clientY - bounds.top;
+
+
+        const beforeX = (mouseX - translateX) / scale;
+        const beforeY = (mouseY - translateY) / scale;
+
         scale += direction * zoomFactor;
         scale = Math.max(0.1, Math.min(5, scale));
+
+        translateX = mouseX - beforeX * scale;
+        translateY = mouseY - beforeY * scale;
         updateTransform();
     }, {passive: false});
 
-    function updateTransform() {
-    group.setAttribute("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
-    }
+    updateTransform();
+    
 }
 
+export function resetView() {
+    scale = 1;
 
+    const container = document.getElementById("treeContainer");
+    const bounds = container.getBoundingClientRect();
+    const centerX = bounds.width / 2;
+    const centerY = bounds.height / 2;
+
+    translateX = centerX - rootX;
+    translateY = centerY - rootY;
+
+    updateTransform();
+}
+
+function updateTransform() {
+    const group = document.getElementById("treeGroup");
+
+
+
+    group.setAttribute("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
+}

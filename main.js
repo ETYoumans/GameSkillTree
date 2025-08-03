@@ -1,5 +1,5 @@
 
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const dotenv = require('dotenv');
 const { electron } = require('process');
@@ -47,3 +47,27 @@ ipcMain.handle('tree:listdir', () => {
 ipcMain.handle('tree:delete', async (_, treename) => {
   return treeManager.del(treename);
 });
+
+ipcMain.handle('tree:txt_to_list', async (_, upload) => {
+  return await treeManager.txtReader(upload);
+})
+
+ipcMain.handle('selectUpload', async () => {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+
+  if (!focusedWindow) {
+    console.error("No focused window available.");
+    return [];
+  }
+
+  try {
+    const result = await dialog.showOpenDialog(focusedWindow, {
+      properties: ['openFile'],
+      filters: [{ name: "Text Files", extensions: ['txt'] }]
+    });
+    return result.filePaths[0];
+  } catch (err) {
+    console.error("Error selecting upload: ", err);
+    return []; 
+  }
+})

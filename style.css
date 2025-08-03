@@ -21,6 +21,23 @@ svg#tree {
   height: 100%;
 }
 
+.resetContainer {
+  position:fixed;
+  right: 5vw;
+  bottom: 5vh;
+}
+
+.resetViewBtn {
+  background-color: transparent;
+  border: none;
+  background-image: url(./home.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  width:3vw;
+  height:3vw;
+}
+
 .node {
   fill: #f0f0f0;
   stroke: #333;
@@ -148,53 +165,4 @@ line {
   font-size:clamp(2px, calc(2*(-4px + 3vw)), 70px);
 }
 
-.treeForm{
-  display: flex;
-}
 
-.treeForm .grp {
-  width: 20vw;
-  position: fixed;
-  top: 1vh;
-  left: 1vw;
-  z-index: 25;
-}
-
-
-.treeForm label {
-  font-size:clamp(1px, calc(-4px + 3vw), 35px);
-  color: #f0f0f0;
-  padding-bottom: 10p;
-}
-
-.treeForm input {
-  font-size:clamp(1px, calc(-4px + 3vw), 35px);
-
-  width: 17vw;
-}
-
-.treeForm button {
-  font-size: clamp(1px, calc(-4px + 3vw), 35px);
-  font-family: Impact, sans-serif;
-  width: 17vw;
-  height: 5vh;
-}
-
-.treeForm strong {
-  font-size: clamp(1px, calc(-4px + 3vw), 35px);
-  color: #f0f0f0;
-  padding-left: 25px;
-}
-
-.treeForm ul {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.01vw;
-  list-style-position: none;
-  width: 100%;
-  height: 100%;
-  float: left;
-  font-size: clamp(1px, calc(-4px + 3vw), 35px);
-  color: #f0f0f0;
-  padding-left: 0.1vw;
-}

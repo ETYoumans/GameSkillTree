@@ -1,7 +1,7 @@
-import { render } from "./render.js";
-import { newTree, loadList, deleteTree, saveTree } from "./newtree.js";
+import { render, prerender, resetView } from "./render.js";
+import { newTree, loadList, deleteTree, saveTree} from "./newtree.js";
 import { returnImage } from "./steam.js";
-import { read_tree } from "./file_helper.js";
+import { read_tree, uploadWindow } from "./file_helper.js";
 
 // --------------------------------------------
 // Boot / Initialization
@@ -11,6 +11,9 @@ const treeCanvasHTML = `
   <svg id="tree" width="100%" height="100%">
     <g id="treeGroup"></g>
   </svg>
+  <div class="resetContainer">
+    <button class="resetViewBtn" id="resetViewBtn"></button>
+  </div>
 `;
 
 const state = {
@@ -20,8 +23,6 @@ const state = {
 
 const container = document.getElementById("treeContainer");
 const selectTree = document.getElementById("selectTree");
-const deleteBtn = document.getElementById("deleteTrees");
-const newTreeBtn = document.getElementById("newTree");
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -33,7 +34,7 @@ function init() {
 }
 
 function attachEventListeners() {
-   document.getElementById("newTree").addEventListener("click", showNewTreeForm);
+   document.getElementById("newTree").addEventListener("click", newtreeHandler);
    attachDeleteHandler();
 }
 
@@ -41,65 +42,10 @@ function attachEventListeners() {
 // New Tree Creation
 // --------------------------------------------
 
-function showNewTreeForm() {
-  
-  const template = document.getElementById('newTreeTemplate');
-  const clone = template.content.cloneNode(true);
-  clearUI();
-  container.innerHTML = '';
-  container.appendChild(clone);
-
-
-  const treeForm = container.querySelector("#treeForm");
-  const treeTitleInput = container.querySelector("#treeTitle");
-  const gameNameInput = container.querySelector("#gameName");
-  const addGameBtn = container.querySelector("#addGameBtn");
-  const gamesList = container.querySelector("#gamesList");
-
-  if (!treeForm || !treeTitleInput || !gameNameInput || !addGameBtn || !gamesList) {
-    console.error("One or more form elements not found");
-    return;
-  }
-  
-  const gameNames = [];
-
-  addGameBtn.addEventListener("click", () => {
-    const gameName = gameNameInput.value.trim();
-    if (gameName) {
-      gameNames.push(gameName);
-      updateGamesList();
-      gameNameInput.value = '';
-      gameNameInput.focus();
-    }
-  });
-
-  function updateGamesList() {
-    gamesList.innerHTML = '';
-    gameNames.forEach((game, index) => {
-      const li = document.createElement("li");
-      li.textContent = game;
-      li.style.cursor = "pointer";
-      li.title = "Click to remove";
-      li.addEventListener("click", () => {
-        gameNames.splice(index, 1);
-        updateGamesList();
-      });
-      gamesList.appendChild(li);
-    });
-  }
-
-  treeForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const treeTitle = treeTitleInput.value.trim();
-
-    if (!treeTitle) return alert("Please enter a tree title");
-    if (gameNames.length === 0) return alert("Please add at least one game");
-
-    state.tree = newTree(treeTitle, [...gameNames]);
-    populateTreeSelect();
-    displayTree();
-  });
-  
+async function newtreeHandler(){
+  const filepath = await uploadWindow();
+  state.currentTree = await newTree(filepath);
+  populateTreeSelect();
 }
 
 // --------------------------------------------
@@ -108,8 +54,7 @@ function showNewTreeForm() {
 
 function attachTreeSelectHandlers() {
   const treeSelector = document.getElementById("selectTree");
-  //treeSelector.addEventListener("change", handleTreeSelect);
-  treeSelector.addEventListener("click", handleTreeSelect);
+  treeSelector.addEventListener("change", handleTreeSelect);
 }
 
 async function handleTreeSelect(event) {
@@ -118,21 +63,23 @@ async function handleTreeSelect(event) {
   clearUI();
 
   if (!selected || selected === "nothing") {
-    document.getElementById("treeGroup").innerHTML = "";
-    state.tree = null;
+    //document.getElementById("treeGroup").innerHTML = "";
+    state.currentTree = null;
     return;
   }
-  //state.tree needs to be tree object WILL FIX
+
   state.currentTree = await read_tree(selected);
+  prerender(state.currentTree.root, state.currentTree);
   displayTree();
 }
 
 async function populateTreeSelect(){
-  let temp = ``;
+  let temp = `<option value="nothing" selected disabled>Select a tree</option>`;
   let list = await loadList();
+  let selectedTree = document.getElementById("selectTree")
   
   if(list.length == 0) {
-    document.getElementById("selectTree").innerHTML = "<option value='nothing'>No Trees Loaded</option>";
+    selectTree.innerHTML = "<option value='nothing'>No Trees Loaded</option>";
     console.error("List is empty");
     return;
   }
@@ -144,7 +91,8 @@ async function populateTreeSelect(){
     temp = temp + base;
   }
 
-  document.getElementById("selectTree").innerHTML = temp;
+  selectedTree.innerHTML = temp;
+  selectTree.value = state.selectedTreeName || "nothing";
 }
 
 // --------------------------------------------
@@ -186,7 +134,7 @@ function displayTree() {
   }
 
   container.innerHTML = treeCanvasHTML;
-
+  document.getElementById("resetViewBtn").addEventListener("click", resetView);
   requestAnimationFrame(() => {
     render(state.currentTree.root, state.currentTree);
   });
