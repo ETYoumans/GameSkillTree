@@ -1,16 +1,19 @@
 
+
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const dotenv = require('dotenv');
-const { electron } = require('process');
 const treeManager = require('./file_manager.js');
+
 
 require('electron-reload')(__dirname, {
   electron: require(`${__dirname}/node_modules/electron`),
   ignored: /trees|[\/\\]\./
 })
 
+
 dotenv.config();
+
 app.whenReady().then(() => {
   
   const win = new BrowserWindow({ 
@@ -22,13 +25,16 @@ app.whenReady().then(() => {
       nodeIntegration: false,
     }
   });
+
   win.webContents.openDevTools();
+
+  
   win.loadFile(path.join(__dirname, 'index.html'));
 });
 
 
 ipcMain.handle('get-api-key', () => {
-  return process.env.MY_API_KEY;
+  return process.env.MY_API_KEY || '';
 });
 
 ipcMain.handle('tree:read', async (_, treename) => {

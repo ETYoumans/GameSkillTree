@@ -62,7 +62,7 @@ function drawNode(svg, x,y, name, node, root, render, tree){
         g.appendChild(text);
 
         g.addEventListener("click", () => {
-            renderGameBox(svg, tree, node, root, render);
+            renderGameBox(svg, tree, node, root, rerender);
         })
 
         svg.appendChild(g);
@@ -129,34 +129,44 @@ function calculateLayout(){
     
 
 
-function recurse(node, depth) {
-  let x, y;
+    function recurse(node, depth, parentAngle) {
+    let x, y, angle;
 
-  if (depth === 0) {
-    x = centerX;
-    y = centerY;
-  } else {
-    const total = currentTree.layers[depth];
-    const index = counters[depth]++;
-    const angleStep = 2 * Math.PI / total;
-    const angle = angleStep * index - Math.PI / 2;
+    if (depth === 0) {
+        x = centerX;
+        y = centerY;
+    } else {
+        let total = currentTree.layers[depth];
+        if(total < 3 * Math.pow(2, depth - 1)){
+            total = 3 * Math.pow(2, depth - 1);
+            const angleStep = 2 * Math.PI / total;
+            let index = (parentAngle + (Math.PI / 2)) / (angleStep);
+            index = Math.floor(index);
+            angle = angleStep * index - Math.PI / 2;
+        } 
+        else {
+            const index = counters[depth]++;
+            const angleStep = 2 * Math.PI / total;
+            angle = angleStep * index - Math.PI / 2;
+        }
+        
 
-    let k=2;
-    if(depth < 3){
-        k=1.5;
+        let k=2;
+        if(depth < 3){
+            k=1.5;
+        }
+        const radius = ((k * depth) + 1) * nodeRadius * 5;
+        
+        x = centerX + radius * Math.cos(angle);
+        y = centerY + radius * Math.sin(angle);
     }
-    const radius = ((k * depth) + 1) * nodeRadius * 5;
-    
-    x = centerX + radius * Math.cos(angle);
-    y = centerY + radius * Math.sin(angle);
-  }
 
-  layoutMap.set(node, { x, y });
+    layoutMap.set(node, { x, y });
 
-  node.children.forEach(child => recurse(child, depth + 1));
-}
+    node.children.forEach(child => recurse(child, depth + 1, angle));
+    }
 
-    recurse(root, 0);
+    recurse(root, 0, 0);
 }
 
 window.addEventListener("resize", () => {
@@ -167,10 +177,10 @@ window.addEventListener("resize", () => {
 
 export function rerender() {
     if (!currentRoot || !currentTree) return;
-    render(currentRoot, currentTree);
+    render(currentRoot, currentTree, true);
 }
 
-export function render(root, tree){
+export function render(root, tree, preserve){
     const points = document.getElementById("points");
     const svg = document.getElementById("tree");
     const group = document.getElementById("treeGroup");
@@ -180,9 +190,12 @@ export function render(root, tree){
     const centerX = bounds.width / 2;
     const centerY = bounds.height / 2;
 
-    translateX = centerX - rootX;
-    translateY = centerY - rootY;
-    scale = 1;
+    if(!preserve){
+        translateX = centerX - rootX;
+        translateY = centerY - rootY;
+        scale = 1;
+    }
+    
 
     requestAnimationFrame(() => {
         if(tree.points > 0){
@@ -197,13 +210,13 @@ export function render(root, tree){
         group.innerHTML = "";
 
         draw(group, root, root, render, tree);
-        panAndZoom();
+        panAndZoom(preserve);
     });
     
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  panAndZoom();
+  panAndZoom(false);
 });
 
 
@@ -212,7 +225,7 @@ let translateX = 0;
 let translateY = 0;
 let scale = 1;
 
-function panAndZoom(){
+function panAndZoom(preserve){
     const svg = document.getElementById("tree");
     const group = document.getElementById("treeGroup");
 
@@ -225,8 +238,11 @@ function panAndZoom(){
     const centerX = bounds.width / 2;
     const centerY = bounds.height / 2;
 
-    translateX = centerX - rootX;
-    translateY = centerY - rootY;
+    if(!preserve){
+        translateX = centerX - rootX;
+        translateY = centerY - rootY;
+    }
+    
 
 
     svg.addEventListener("mousedown", (e) => {
@@ -289,8 +305,5 @@ export function resetView() {
 
 function updateTransform() {
     const group = document.getElementById("treeGroup");
-
-
-
     group.setAttribute("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
 }

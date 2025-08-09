@@ -1,7 +1,7 @@
-import { render, prerender, resetView } from "./render.js";
-import { newTree, loadList, deleteTree, saveTree} from "./newtree.js";
-import { returnImage } from "./steam.js";
+import { render, prerender, resetView, rerender } from "./render.js";
+import { newTree, loadList, deleteTree} from "./newtree.js";
 import { read_tree, uploadWindow } from "./file_helper.js";
+import { clearCache } from "./settings.js";
 
 // --------------------------------------------
 // Boot / Initialization
@@ -13,6 +13,9 @@ const treeCanvasHTML = `
   </svg>
   <div class="resetContainer">
     <button class="resetViewBtn" id="resetViewBtn"></button>
+  </div>
+  <div class="settingsContainer">
+    <button class="settingsBtn" id="settingsBtn"></button>
   </div>
 `;
 
@@ -27,7 +30,6 @@ const selectTree = document.getElementById("selectTree");
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
-   console.log("Renderer loaded!");
    attachEventListeners();
    attachTreeSelectHandlers();
    populateTreeSelect();
@@ -135,9 +137,31 @@ function displayTree() {
 
   container.innerHTML = treeCanvasHTML;
   document.getElementById("resetViewBtn").addEventListener("click", resetView);
+  document.getElementById("settingsBtn").addEventListener("click", displaySettings);
   requestAnimationFrame(() => {
-    render(state.currentTree.root, state.currentTree);
+    render(state.currentTree.root, state.currentTree, false);
   });
+}
+
+// --------------------------------------------
+// Display Settings
+// --------------------------------------------
+
+const settingsCanvasHTML = `
+  <div class="settings">
+  <button class="clearCacheBtn" id="clearCacheBtn">Clear Cache</button>
+  </br>
+  <button class="exitBtn" id="exitBtn">Exit</button>
+  </div>
+`;
+
+
+
+function displaySettings() {
+  clearUI();
+  container.innerHTML = settingsCanvasHTML;
+  document.getElementById("exitBtn").addEventListener("click", displayTree);
+  document.getElementById("clearCacheBtn").addEventListener("click", clearCache);
 }
 
 // --------------------------------------------

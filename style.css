@@ -30,12 +30,34 @@ svg#tree {
 .resetViewBtn {
   background-color: transparent;
   border: none;
-  background-image: url(./home.png);
+  background-image: url(./images/home.png);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: 50% 50%;
   width:3vw;
   height:3vw;
+}
+
+.settingsContainer {
+  position: fixed;
+  right: 10vw;
+  bottom: 5vh;
+}
+
+.settingsBtn {
+  background-color: transparent;
+  border: none;
+  background-image: url(./images/settings.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  width:3vw;
+  height:3vw;
+}
+
+.settings button{
+  width: 10vw;
+  height: 5vw;
 }
 
 .node {

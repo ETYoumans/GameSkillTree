@@ -12,7 +12,7 @@ function displayTitle(title){
 
 async function displayImage(title){
     let image = await returnImage(title);
-    imageContainer.innerHTML = `<img src=${image} s />`
+    imageContainer.innerHTML = `<img src=${image} />`
 }
 
 function displayButtons(svg, node, tree, root, render){
