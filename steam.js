@@ -1,3 +1,6 @@
+import { best_match } from "./match_strings.js";
+
+
 function saveCache(cache){
     const obj = Object.fromEntries(cache);
     localStorage.setItem("imageCache", JSON.stringify(obj));
@@ -50,7 +53,18 @@ async function getSteamApp(gameName){
       }
       const data = await res.json();
       if(data.items && data.items.length > 0){
-        id = data.items[0].id;
+        let temp = [];
+        let count = 0;
+        for(let i = 0; i < data.items.length; i++){
+          temp.push(data.items[i].name);
+          count++;
+          if(count > 4) break;
+        }
+
+        let itr = best_match(gameName, temp);
+        if(itr === -1) return null;
+        id = data.items[itr].id;
+        console.log(itr, " ", id);
       }
 
       if(id > 0){
@@ -83,18 +97,37 @@ async function getRAWG(gameName) {
     const res = await fetch(url);
     const data = await res.json();
 
-    if (data.results && data.results.length > 0) {
-      const game = data.results[0];
+    if(data.results && data.results.length > 0){
+      let temp = [];
+      let count = 0;
+      for(let i = 0; i < data.results.length; i++){
+        temp.push(data.results[i].name);
+        count++;
+        if(count > 4) break;
+      }
+
+      const itr = best_match(gameName, temp);
+      if(itr < 0) return null;
+      const game = data.results[itr];
       if(game.name.includes(gameName)) {
+        console.log(game);
         return game.background_image;
       }
       return null;
-    } else {
-      return null;
-    }
+        
+    } else return null;
   } catch (err) {
     console.error('RAWG fetch error:', err);
     return null;
   }
 }
 
+/*
+    if (data.results && data.results.length > 0) {
+      console.log(data.results);
+      const game = data.results[0];
+      if(game.name.includes(gameName)) {
+        return game.background_image;
+      }
+      return null;
+*/
