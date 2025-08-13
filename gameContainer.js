@@ -1,13 +1,16 @@
 import {saveTree} from "./newtree.js"
-
+import { displayCompletionContainer } from "./pages.js";
 const titleContainer = document.getElementById("titleContainer");
 const imageContainer = document.getElementById("imageContainer");
 const buttonContainer = document.getElementById("buttonContainer");
 const points = document.getElementById("points");
 import { returnImage } from "./steam.js";
 
-function displayTitle(title){
-    titleContainer.innerHTML = `<h1>${title}</h1>`
+function displayTitle(title, subtitle){
+    if(subtitle == '')
+        titleContainer.innerHTML = `<h1>${title}</h1>`;
+    else
+        titleContainer.innerHTML = `<h1>${title}</h1><p>${subtitle}</p>`;
 }
 
 async function displayImage(title){
@@ -22,13 +25,11 @@ function displayButtons(svg, node, tree, root, render){
         unlockButton.addEventListener("click", () => {
             if(tree.points > 0){
                 tree.points -= 1;
+                tree.numCompleted += 0.2; //stores unlocked status in tree
                 node.locked = false;
                 svg.innerHTML = "";
-                render(root, tree);
+                render(root, tree, true);
                 displayButtons(svg, node, tree, root, render);
-            }
-            else{
-                console.log("Not enough points");
             }
             saveTree(tree);
             
@@ -38,9 +39,12 @@ function displayButtons(svg, node, tree, root, render){
         buttonContainer.innerHTML = `<button type="button" id="completeButton">COMPLETE</button>`;
         completeButton.addEventListener("click", () => {
             if(!node.completed){
-                tree.points += 1;
+                tree.points++;
+                tree.numCompleted -= 0.2; //removes unlocked status in tree
+                tree.numCompleted++;
                 node.completed = true;
-                render(root, tree);
+                displayCompletionContainer();
+                render(root, tree, true);
                 displayButtons(svg, node, tree, root, render);
 
             }
@@ -52,7 +56,7 @@ function displayButtons(svg, node, tree, root, render){
 }
 
 export function renderGameBox(svg, tree, node, root, render){
-    displayTitle(node.game);
+    displayTitle(node.game, node.subtitle);
     displayImage(node.game);
     displayButtons(svg, node, tree, root, render);
 }

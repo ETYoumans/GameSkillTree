@@ -2,15 +2,11 @@ Game Skill Tree:
 
 To Do List:
 
-Important
-
-4. Add optional notes section (maybe hover to see notes) maybe add it as a subtitle?
-5. Completion Check and Reward
-
-Eh:
-11. Add custom icon
-13. Fix read me to be informative to user
-8. Upload Custom images
+1: Add help section
+2: Add completation rate Y
+3: Add subtitles Y
+4: Update readme
+5: Finalize UI
 
 ## Disclaimer
 

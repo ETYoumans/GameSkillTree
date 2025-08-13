@@ -10,6 +10,8 @@ Input: String, Array[Strings]
 */
 
 export function best_match(input, list){
+    input = input.toLowerCase();
+
     let output = edit_distance(input, list);
     let min = Infinity;
     let minItr = -1;
@@ -19,8 +21,9 @@ export function best_match(input, list){
             minItr = i;
         }
     }
+    console.log(minItr, " ", min);
     if(minItr > -1)
-        return min < 2 ? minItr : -1;
+        return min < 5 ? minItr : -1;
     else
         return -1;
 
@@ -31,7 +34,7 @@ function edit_distance(input, list){
     let m = input.length;
 
     for(let i = 0; i < list.length; i++){
-        let s = list[i];
+        let s = list[i].toLowerCase();
 
         let n = s.length;
 

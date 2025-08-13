@@ -64,7 +64,6 @@ async function getSteamApp(gameName){
         let itr = best_match(gameName, temp);
         if(itr === -1) return null;
         id = data.items[itr].id;
-        console.log(itr, " ", id);
       }
 
       if(id > 0){

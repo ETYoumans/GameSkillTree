@@ -48,16 +48,17 @@ function drawNode(svg, x,y, name, node, root, render, tree){
 
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
         text.setAttribute("x", x);
-        text.setAttribute("y", y + 4);
-        text.setAttribute("textLength", 2*K*nodeRadius - 2*K);
-        text.setAttribute("lengthAdjust", "spacingAndGlyphs");
+        text.setAttribute("y", y);
+        text.setAttribute("text-anchor", "middle");
         
-        let temp = name;
-        if(name.length > 20){
-            temp = name.substring(0,17) + "...";
-        }
+
+        let temp = getInitials(name);
         
         text.textContent = temp;
+
+        let fontSize = Math.min(2 * nodeRadius / temp.length, 12) * 1.5;
+        text.setAttribute("font-size", fontSize);
+        text.setAttribute("dy", fontSize * 0.35)
         text.classList.add("label");
         g.appendChild(text);
 
@@ -67,6 +68,20 @@ function drawNode(svg, x,y, name, node, root, render, tree){
 
         svg.appendChild(g);
     }
+}
+
+function getInitials(s){
+    let count = 0;
+    const words = s.split(" ");
+    let temp = "";
+    for(let i = 0; i < words.length; i++){
+        temp = temp + words[i].charAt(0);
+        count++;
+        if(count > 5)
+            break;
+    }
+    return temp;
+    
 }
 
 function drawLine(svg, x1, y1, x2, y2) {
@@ -199,8 +214,17 @@ export function render(root, tree, preserve){
 
     requestAnimationFrame(() => {
         if(tree.points > 0){
-            
-            points.innerHTML = "Unlock Available!";
+            if(tree.numCompleted == tree.numGamesTotal)
+                points.innerHTML = "COMPLETED!"
+            else if(tree.numCompleted > tree.numGamesTotal - 1){
+                let temp = (Math.floor((tree.numCompleted - Math.floor(tree.numCompleted))*10))/10;
+                if(temp == 0.2)
+                    points.innerHTML = "";
+                else
+                    points.innerHTML = "Unlock Available!";
+            }
+            else
+                points.innerHTML = "Unlock Available!";
         }
         else {
             points.innerHTML = "";
@@ -225,7 +249,7 @@ let translateX = 0;
 let translateY = 0;
 let scale = 1;
 
-function panAndZoom(preserve){
+function panAndZoom(preserve) {
     const svg = document.getElementById("tree");
     const group = document.getElementById("treeGroup");
 
@@ -238,41 +262,40 @@ function panAndZoom(preserve){
     const centerX = bounds.width / 2;
     const centerY = bounds.height / 2;
 
-    if(!preserve){
+    if (!preserve) {
         translateX = centerX - rootX;
         translateY = centerY - rootY;
+        scale = 1;
     }
-    
 
-
-    svg.addEventListener("mousedown", (e) => {
+    // Remove any previous listeners before adding new ones
+    svg.onmousedown = (e) => {
         isPanning = true;
         startX = e.clientX;
         startY = e.clientY;
-    });
+    };
 
-    svg.addEventListener("mousemove", (e) => {
+    svg.onmousemove = (e) => {
         if (!isPanning) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
-            translateX += dx;
-            translateY += dy;
-            startX = e.clientX;
-            startY = e.clientY;
-            updateTransform();
-    });
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        translateX += dx;
+        translateY += dy;
+        startX = e.clientX;
+        startY = e.clientY;
+        updateTransform();
+    };
 
-    svg.addEventListener("mouseup", () => { isPanning = false; });
-    svg.addEventListener("mouseleave", () => { isPanning = false; });
+    svg.onmouseup = () => { isPanning = false; };
+    svg.onmouseleave = () => { isPanning = false; };
 
-    svg.addEventListener("wheel", (e) => {
+    svg.onwheel = (e) => {
         e.preventDefault();
         const zoomFactor = 0.1;
         const direction = e.deltaY > 0 ? -1 : 1;
 
         const mouseX = e.clientX - bounds.left;
         const mouseY = e.clientY - bounds.top;
-
 
         const beforeX = (mouseX - translateX) / scale;
         const beforeY = (mouseY - translateY) / scale;
@@ -283,10 +306,9 @@ function panAndZoom(preserve){
         translateX = mouseX - beforeX * scale;
         translateY = mouseY - beforeY * scale;
         updateTransform();
-    }, {passive: false});
+    };
 
     updateTransform();
-    
 }
 
 export function resetView() {
@@ -307,3 +329,6 @@ function updateTransform() {
     const group = document.getElementById("treeGroup");
     group.setAttribute("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
 }
+
+
+

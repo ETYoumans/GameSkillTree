@@ -14,6 +14,7 @@ html {
   left: 10%;
   margin: 1em auto;
   overflow: hidden;
+  user-select: none;
 }
 
 svg#tree {
@@ -60,6 +61,17 @@ svg#tree {
   height: 5vw;
 }
 
+.completionContainer {
+  right: 5vw;
+}
+
+.completionContainer p {
+  font-family: "Russo One", sans-serif;
+  font-size: clamp(1px, calc(1.42*(-4px + 3vw)), 50px); 
+  color:#aaa;
+}
+
+
 .node {
   fill: #f0f0f0;
   stroke: #333;
@@ -82,11 +94,6 @@ svg#tree {
   fill: #42ffff;
 }
 
-.label {
-  font: 12px sans-serif;
-  text-anchor: middle;
-}
-
 line {
   stroke: #aaa;
   stroke-width: 2;
@@ -105,15 +112,29 @@ line {
     flex-direction: column;
 }
 
+.label {
+  font-family: "Russo One", sans-serif;
+}
+
 .titleContainer {
   text-align: center;
 }
 
 .titleContainer h1 {
   font-size: clamp(1px, calc(1.42*(-4px + 3vw)), 50px);
-  line-height: 50px;
-  color: black;
-  font-family: Impact, sans-serif;
+  margin: 0.25em;
+  color:#ffffff;
+  font-family: "Russo One", sans-serif;
+  font-weight: 400;
+}
+
+.titleContainer p {
+  font-size: clamp(1px, calc(0.71*(-4px + 3vw)), 25px);
+  margin: 0;
+  margin-bottom: 0.25em;
+
+  color:#cacaca;
+  font-family: "Russo One", sans-serif;
 }
 
 .gameContainer {
@@ -178,13 +199,29 @@ line {
 
 .points {
   position: fixed;
-  top:0px;
+  top:2vh;
   left:22%;
   color:#aaa;
   z-index: 50;
   text-align: center;
-  font-family: Impact, sans-serif;
+  font-family: "Russo One", sans-serif;
   font-size:clamp(2px, calc(2*(-4px + 3vw)), 70px);
+}
+
+.completionContainer,
+.points {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  user-select: none;
+  top: 7vh;
+  position: fixed;
+  transform: translateY(-50%);
+}
+
+.gettingStartContainer {
+
 }
 
 
