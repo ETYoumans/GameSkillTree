@@ -212,27 +212,9 @@ export function render(root, tree, preserve){
     }
     
 
-    requestAnimationFrame(() => {
-        if(tree.points > 0){
-            if(tree.numCompleted == tree.numGamesTotal)
-                points.innerHTML = "COMPLETED!"
-            else if(tree.numCompleted > tree.numGamesTotal - 1){
-                let temp = (Math.floor((tree.numCompleted - Math.floor(tree.numCompleted))*10))/10;
-                if(temp == 0.2)
-                    points.innerHTML = "";
-                else
-                    points.innerHTML = "Unlock Available!";
-            }
-            else
-                points.innerHTML = "Unlock Available!";
-        }
-        else {
-            points.innerHTML = "";
-        }
+    requestAnimationFrame(() => {     
         saveTree(tree);
-
         group.innerHTML = "";
-
         draw(group, root, root, render, tree);
         panAndZoom(preserve);
     });
@@ -268,7 +250,6 @@ function panAndZoom(preserve) {
         scale = 1;
     }
 
-    // Remove any previous listeners before adding new ones
     svg.onmousedown = (e) => {
         isPanning = true;
         startX = e.clientX;

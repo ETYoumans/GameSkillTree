@@ -34,6 +34,7 @@ function init() {
    attachEventListeners();
    attachTreeSelectHandlers();
    populateTreeSelect();
+   container.innerHTML = gettingStartCanvasHTML;
 }
 
 function attachEventListeners() {
@@ -133,6 +134,27 @@ async function handleDeleteTree() {
 // Display Tree & Total
 // --------------------------------------------
 
+export function displayUnlock(){
+  const points = document.getElementById("points");
+  let tree = state.currentTree;
+  if(tree.points > 0){
+      if(tree.numCompleted == tree.numGamesTotal)
+          points.innerHTML = "COMPLETED!"
+  else if(tree.numCompleted > tree.numGamesTotal - 1){
+      let temp = (Math.floor((tree.numCompleted - Math.floor(tree.numCompleted))*10))/10;
+      if(temp == 0.2)
+          points.innerHTML = "";
+      else
+          points.innerHTML = "Unlock Available!";
+  }
+  else
+      points.innerHTML = "Unlock Available!";
+  }
+  else {
+      points.innerHTML = "";
+  }
+}
+
 function displayTree() {
   
   if (!state.currentTree) {
@@ -144,6 +166,7 @@ function displayTree() {
   document.getElementById("resetViewBtn").addEventListener("click", resetView);
   document.getElementById("settingsBtn").addEventListener("click", displaySettings);
   displayCompletionContainer();
+  displayUnlock();
   requestAnimationFrame(() => {
     render(state.currentTree.root, state.currentTree, false);
   });
@@ -193,6 +216,7 @@ import { clearCache, fixNumCompleted } from "./settings.js";
 function displaySettings() {
   clearUI();
   container.innerHTML = gettingStartCanvasHTML + settingsCanvasHTML;
+  document.getElementById("points").innerHTML = "";
   document.getElementById("exitBtn").addEventListener("click", displayTree);
   document.getElementById("clearCacheBtn").addEventListener("click", clearCache);
   document.getElementById("fixTreeBtn").addEventListener("click", recountFunction);
@@ -226,7 +250,7 @@ const gettingStartCanvasHTML = `
       Use panning, zooming, and the home button to navigate your tree.
     </p>
     <p>
-      Check your completion rate in the top right. It can switch between fractions and percentages.
+      Check your completion rate in the top right. It can switch between fractions and percentages when you click on it.
       The settings page is mainly for debugging, allowing you to fix any errors that may occur. 
       This is primarily to fix the tree when updating the application. 
     </p>

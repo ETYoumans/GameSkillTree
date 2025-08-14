@@ -22,6 +22,12 @@ svg#tree {
   height: 100%;
 }
 
+/*
+--------------------------------------------
+Tree Overlay
+--------------------------------------------
+*/
+
 .resetContainer {
   position:fixed;
   right: 5vw;
@@ -67,10 +73,38 @@ svg#tree {
 
 .completionContainer p {
   font-family: "Russo One", sans-serif;
-  font-size: clamp(1px, calc(1.42*(-4px + 3vw)), 50px); 
+  font-size: 2.604vw; 
   color:#aaa;
 }
 
+.points {
+  position: fixed;
+  top:2vh;
+  left:22%;
+  color:#aaa;
+  z-index: 50;
+  text-align: center;
+  font-family: "Russo One", sans-serif;
+  font-size:3.646vw;
+}
+
+.completionContainer,
+.points {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  user-select: none;
+  top: 7vh;
+  position: fixed;
+  transform: translateY(-50%);
+}
+
+/*
+--------------------------------------------
+Tree
+--------------------------------------------
+*/
 
 .node {
   fill: #f0f0f0;
@@ -99,6 +133,16 @@ line {
   stroke-width: 2;
 }
 
+.label {
+  font-family: "Russo One", sans-serif;
+}
+
+/*
+--------------------------------------------
+Sidebar
+--------------------------------------------
+*/
+
 .sidebar {
     height: 100%;
     width: 20%;
@@ -112,16 +156,12 @@ line {
     flex-direction: column;
 }
 
-.label {
-  font-family: "Russo One", sans-serif;
-}
-
 .titleContainer {
   text-align: center;
 }
 
 .titleContainer h1 {
-  font-size: clamp(1px, calc(1.42*(-4px + 3vw)), 50px);
+  font-size: 2.604vw;
   margin: 0.25em;
   color:#ffffff;
   font-family: "Russo One", sans-serif;
@@ -129,7 +169,7 @@ line {
 }
 
 .titleContainer p {
-  font-size: clamp(1px, calc(0.71*(-4px + 3vw)), 25px);
+  font-size: 1.302vw;
   margin: 0;
   margin-bottom: 0.25em;
 
@@ -155,19 +195,23 @@ line {
   left:50%;
   transform: translateX(-50%);
   width: 50%;
+}
 
+select {
+  font-family: "Russo One", sans-serif;
+  background-color: #aaa;
 }
 
 .buttonContainer h3 {
   transform: translateX(-33%) translateY(100%);
   font-family: Impact, sans-serif;
-  font-size: clamp(1px, calc(0.964px + 3.596vw), 70px);
+  font-size: 3.646vw;
   -webkit-text-fill-color: #ff0000;
 }
 
 .buttonContainer button {
   font-family: Impact, sans-serif;
-  font-size: clamp(1px, calc(-4px + 3vw), 35px);
+  font-size: 1.823vw;
 }
 
 .bottombuttons {
@@ -183,8 +227,12 @@ line {
 .bottombuttons button {
   width: 50%;
   height: 100%;
-
-  font-size: clamp(1px, calc(-4px + 3vw), 35px);
+  font-family: "Russo One", sans-serif;
+  font-size: 1.823vw;
+  background-color: #aaa;
+  box-shadow: none;
+  margin: 2.5px;
+  border: 0px;
 }
 
 .selectTree {
@@ -194,34 +242,36 @@ line {
   width:18%;
   height:10%;
   text-align: center;
-  font-size:clamp(1px, calc(-4px + 3vw), 35px);
+  font-size: 1.823vw;
 }
 
-.points {
-  position: fixed;
-  top:2vh;
-  left:22%;
-  color:#aaa;
-  z-index: 50;
-  text-align: center;
-  font-family: "Russo One", sans-serif;
-  font-size:clamp(2px, calc(2*(-4px + 3vw)), 70px);
-}
-
-.completionContainer,
-.points {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  user-select: none;
-  top: 7vh;
-  position: fixed;
-  transform: translateY(-50%);
-}
+/*
+--------------------------------------------
+Miscellaneous 
+--------------------------------------------
+*/
 
 .gettingStartContainer {
-
+  font-family: "Russo One", sans-serif;
+  color:#aaa;
+  margin: 2em;
+  font-size: 1.302vw;
 }
 
+.gettingStartContainer h2 {
+  text-align: center;
+}
 
+.settings {
+  display: flex;
+  flex-direction: row;
+  justify-self: center;
+}
+
+.settings button {
+  margin: 2vw;
+  font-family: "Russo One", sans-serif;
+  font-size: 1.302vw;
+  background-color: #aaa;
+  border-radius: 20px;
+}

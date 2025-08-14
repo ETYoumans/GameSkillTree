@@ -1,5 +1,5 @@
 import {saveTree} from "./newtree.js"
-import { displayCompletionContainer } from "./pages.js";
+import { displayCompletionContainer , displayUnlock } from "./pages.js";
 const titleContainer = document.getElementById("titleContainer");
 const imageContainer = document.getElementById("imageContainer");
 const buttonContainer = document.getElementById("buttonContainer");
@@ -13,8 +13,8 @@ function displayTitle(title, subtitle){
         titleContainer.innerHTML = `<h1>${title}</h1><p>${subtitle}</p>`;
 }
 
-async function displayImage(title){
-    let image = await returnImage(title);
+async function displayImage(node){
+    let image = await returnImage(node);
     imageContainer.innerHTML = `<img src=${image} />`
 }
 
@@ -30,6 +30,7 @@ function displayButtons(svg, node, tree, root, render){
                 svg.innerHTML = "";
                 render(root, tree, true);
                 displayButtons(svg, node, tree, root, render);
+                displayUnlock();
             }
             saveTree(tree);
             
@@ -46,17 +47,19 @@ function displayButtons(svg, node, tree, root, render){
                 displayCompletionContainer();
                 render(root, tree, true);
                 displayButtons(svg, node, tree, root, render);
-
+                displayUnlock();
             }
         });
     }
     else{
         buttonContainer.innerHTML = `<h3>COMPLETED</h3>`;
+        displayUnlock();
     }
+        
 }
 
 export function renderGameBox(svg, tree, node, root, render){
     displayTitle(node.game, node.subtitle);
-    displayImage(node.game);
+    displayImage(node);
     displayButtons(svg, node, tree, root, render);
 }

@@ -9,24 +9,48 @@ Input: String, Array[Strings]
 
 */
 
-export function best_match(input, list){
-    input = input.toLowerCase();
-
-    let output = edit_distance(input, list);
+export function best_match(node, list){
+    let input = node.game.toLowerCase();
+    if (input.includes(":"))
+        input = input.slice(0, input.indexOf(":"));
+    let filtered = filter(list);
+    let output = edit_distance(input, filtered);
     let min = Infinity;
+    let minAdjust = Infinity;
     let minItr = -1;
     for(let i = 0; i <= output.length; i++){
-        if(output[i] < min){
+        if(output[i]*(i+1) < minAdjust){
             min = output[i];
+            minAdjust = output[i]*(i+1);
             minItr = i;
         }
     }
     console.log(minItr, " ", min);
-    if(minItr > -1)
-        return min < 5 ? minItr : -1;
+    if(minItr > -1) {
+        if(min < 5){
+            node.game = filtered[minItr];
+            return minItr;
+        }
+        else
+            return -1;
+    }
     else
         return -1;
 
+}
+
+function filter(list){
+    let output = [];
+    for(let i = 0; i < list.length; i++){
+        let s = list[i].toLowerCase();
+        if(s.includes("soundtrack") || s.includes("dlc"))
+            continue;
+        if(s.includes(":"))
+            list[i] = list[i].slice(0, list[i].indexOf(":"));
+        
+        output.push(list[i]);
+    }
+    return output;
 }
 
 function edit_distance(input, list){
