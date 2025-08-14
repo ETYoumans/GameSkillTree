@@ -2,8 +2,6 @@ import {saveTree} from "./newtree.js"
 
 export function clearCache(){
     localStorage.clear();
-    console.log("Cache Clear");
-    console.log(localStorage);
 }
 
 export function fixNumCompleted(tree) {

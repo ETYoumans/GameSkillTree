@@ -156,23 +156,36 @@ Sidebar
     flex-direction: column;
 }
 
+.titleWrapper {
+  height: 75%;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+}
+
 .titleContainer {
   text-align: center;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+   
 }
 
 .titleContainer h1 {
-  font-size: 2.604vw;
+  font-size: clamp(1rem, 2.604vw, 5rem);
   margin: 0.25em;
   color:#ffffff;
   font-family: "Russo One", sans-serif;
   font-weight: 400;
+  overflow-wrap: break-word;
+   word-break: break-word;
 }
 
 .titleContainer p {
-  font-size: 1.302vw;
+  font-size: clamp(0, 1.302vw, 1.5rem);
   margin: 0;
   margin-bottom: 0.25em;
-
   color:#cacaca;
   font-family: "Russo One", sans-serif;
 }
@@ -181,6 +194,7 @@ Sidebar
   text-align: center;
   overflow: hidden;
   position: relative;
+  bottom: 0%;
 }
 
 .imageContainer img {

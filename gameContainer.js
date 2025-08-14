@@ -6,12 +6,36 @@ const buttonContainer = document.getElementById("buttonContainer");
 const points = document.getElementById("points");
 import { returnImage } from "./steam.js";
 
-function displayTitle(title, subtitle){
-    if(subtitle == '')
-        titleContainer.innerHTML = `<h1>${title}</h1>`;
-    else
-        titleContainer.innerHTML = `<h1>${title}</h1><p>${subtitle}</p>`;
+function displayTitle(title, subtitle) {
+    const container = document.getElementById("titleContainer");
+    
+    if (subtitle === '') {
+        container.innerHTML = `<h1>${title}</h1>`;
+    } else {
+        container.innerHTML = `<h1>${title}</h1><p>${subtitle}</p>`;
+    }
+    adjustTitle();
 }
+
+function adjustTitle() {
+  const container = document.querySelector(".titleContainer");
+  const title = container.querySelector("h1");
+  const subtitle = container.querySelector("p");
+  if (!title) return;
+
+  let fontSize = 3; // in vw
+  title.style.fontSize = fontSize + "vw";
+
+  while (title.scrollHeight > container.clientHeight && fontSize > 0.5) {
+    fontSize -= 0.5;
+    title.style.fontSize = fontSize + "vw";
+    if(subtitle) subtitle.style.fontSize = (fontSize / 2) + "vw";
+  }
+}
+
+window.addEventListener("DOMContentLoaded", adjustTitle);
+window.addEventListener("resize", adjustTitle);
+
 
 async function displayImage(node){
     let image = await returnImage(node);

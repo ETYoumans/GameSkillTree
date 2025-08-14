@@ -1,19 +1,9 @@
-/*
-
-String matching algorithm:
-
-Goal: Give strings a valid percentage of match. Then choose no match if no other match is over 75%. Otherwise, choose the best match
-
-Input: String, Array[Strings]
-
-
-*/
-
 export function best_match(node, list){
     let input = node.game.toLowerCase();
+    let inputIncludesColon = false;
     if (input.includes(":"))
-        input = input.slice(0, input.indexOf(":"));
-    let filtered = filter(list);
+        inputIncludesColon = true;
+    let filtered = filter(list, inputIncludesColon);
     let output = edit_distance(input, filtered);
     let min = Infinity;
     let minAdjust = Infinity;
@@ -25,7 +15,6 @@ export function best_match(node, list){
             minItr = i;
         }
     }
-    console.log(minItr, " ", min);
     if(minItr > -1) {
         if(min < 5){
             node.game = filtered[minItr];
@@ -39,13 +28,13 @@ export function best_match(node, list){
 
 }
 
-function filter(list){
+function filter(list, inputIncludesColon){
     let output = [];
     for(let i = 0; i < list.length; i++){
         let s = list[i].toLowerCase();
         if(s.includes("soundtrack") || s.includes("dlc"))
             continue;
-        if(s.includes(":"))
+        if(s.includes(":") && !inputIncludesColon)
             list[i] = list[i].slice(0, list[i].indexOf(":"));
         
         output.push(list[i]);

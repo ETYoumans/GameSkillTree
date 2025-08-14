@@ -14,29 +14,30 @@ const imageCache = loadCache();
 
 export async function returnImage(node){
   let gameName = node.game;
-  const imageContainer = document.getElementById("imageContainer");
-  imageContainer.innerHTML = `<img src="./images/failImg.jpg" />`
 
   if(imageCache.has(gameName)){
       return imageCache.get(gameName);
   }
 
+  const imageContainer = document.getElementById("imageContainer");
+  imageContainer.innerHTML = `<img src="./images/failImg.jpg" />`
+
   let steam = await getSteamApp(node, gameName);
   if(steam != null) {
-      imageCache.set(node.gameName, steam);
+      imageCache.set(node.game, steam);
       saveCache(imageCache);
       return steam;
   }
   
   let rawg = await getRAWG(node, gameName);
-  
+
   if(rawg != null){
-      imageCache.set(node.gameName, rawg);
+      imageCache.set(node.game, rawg);
       saveCache(imageCache);
       return rawg;
   }
   
-  imageCache.set(gameName, "./images/failImg.jpg");
+  imageCache.set(node.game, "./images/failImg.jpg");
   saveCache(imageCache);
   return "./images/failImg.jpg";
 
@@ -53,10 +54,7 @@ async function getSteamApp(node){
         console.err("Proxy and Store Search Failed");
         return null;
       }
-      console.log("Res OK!");
       const data = await res.json();
-      console.log(res);
-      console.log(data);
       if(data.items && data.items.length > 0){
         let temp = [];
         let count = 0;
@@ -85,7 +83,7 @@ async function getSteamApp(node){
           return null;
       }
     } catch (err){
-      console.log(err);
+      console.error(err);
       return null;
     }
 
@@ -100,7 +98,6 @@ async function getRAWG(node) {
   try {
     const res = await fetch(url);
     const data = await res.json();
-    console.log(data);
 
     if(data.results && data.results.length > 0){
       let temp = [];
@@ -121,7 +118,7 @@ async function getRAWG(node) {
       if(itr < 0) return null;
       const game = data.results[itr];
       if(game.name.includes(game.name)) {
-        console.log(game);
+        console.log("HERE");
         return game.background_image;
       }
       return null;
@@ -132,13 +129,3 @@ async function getRAWG(node) {
     return null;
   }
 }
-
-/*
-    if (data.results && data.results.length > 0) {
-      console.log(data.results);
-      const game = data.results[0];
-      if(game.name.includes(gameName)) {
-        return game.background_image;
-      }
-      return null;
-*/

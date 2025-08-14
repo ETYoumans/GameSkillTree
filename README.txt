@@ -1,12 +1,21 @@
-Game Skill Tree:
+Game Skill Tree
 
-To Do List:
+Turn your game backlog into an interactive skill tree!
+Track your progress, unlock games, and make completing your backlog more fun.
 
-1: Add help section
-2: Add completation rate Y
-3: Add subtitles Y
-4: Update readme
-5: Finalize UI
+How to get started:
+
+1. Create a Tree File
+
+Use a .txt file (Notepad works fine).
+
+The first line is the tree title.
+
+Each subsequent line is a game title.
+
+Add subtitles in parentheses for optional goals (e.g., randomizer mode, true ending).
+Subtitles will not affect images.
+
 
 ## Disclaimer
 
