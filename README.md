@@ -23,16 +23,17 @@ Track your progress, unlock games, and make completing your backlog more fun.
 - Each **subsequent line** is a game title.
 - Add **subtitles in parentheses** for optional goals (e.g., randomizer mode, true ending).  
   Subtitles will not affect images.
+  
+Here is an example text file:
 
-**Example tree file:**
+![Example Text File](images/example-txt-img.png)
+
 
 ### 2. Upload Your Tree
 1. Open the app.
 2. Click **New Tree** and upload your `.txt` file.
 3. The app will create a file in: resources/app/trees
 4. Share this file with others by having them copy it into their own `trees` folder.
-
----
 
 ### 3. Explore Your Tree
 - Click on nodes to view details, unlock games, and track progress.
@@ -42,13 +43,9 @@ Track your progress, unlock games, and make completing your backlog more fun.
 - **Gray** → Locked
 - Use panning, zooming, and the Home button to navigate.
 
----
-
 ### 4. Track Your Completion
 - Your completion rate is shown in the **top-right** corner.
 - Click it to toggle between fraction and **percentage.
-
----
 
 ### 5. Settings
 - Mostly for debugging.
@@ -59,9 +56,9 @@ Track your progress, unlock games, and make completing your backlog more fun.
 
 ## Installation
 
--Check out the releases page. The newest one should have the highest version tag.
--Download the zipped folder. If you want to develope your own, download the source code and related dependencies.
--Once downloaded, unzip the folder and the application will be inside of it.
+- Check out the releases page. The newest one should have the highest version tag.
+- Download the zipped folder. If you want to develope your own, download the source code and related dependencies.
+- Once downloaded, unzip the folder and the application will be inside of it.
 
 ## Disclaimer
 
@@ -74,3 +71,5 @@ This project is for **personal and educational purposes only** and is not affili
 ## License
 
 This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
+
+![Example Tree](images/example-tree.png)
