@@ -20,7 +20,7 @@ export async function returnImage(node){
   }
 
   const imageContainer = document.getElementById("imageContainer");
-  imageContainer.innerHTML = `<img src="./images/failImg.jpg" />`
+  imageContainer.innerHTML = `<img src="./images/failImg.png" />`
 
   let steam = await getSteamApp(node, gameName);
   if(steam != null) {
@@ -37,9 +37,9 @@ export async function returnImage(node){
       return rawg;
   }
   
-  imageCache.set(node.game, "./images/failImg.jpg");
+  imageCache.set(node.game, "./images/failImg.png");
   saveCache(imageCache);
-  return "./images/failImg.jpg";
+  return "./images/failImg.png";
 
 }
 
@@ -107,6 +107,7 @@ async function getRAWG(node) {
         count++;
         if(count > 4) break;
       }
+      console.log(temp);
       let gameName = node.game;
       const itr = best_match(node, temp);
       if(node.game != gameName){
@@ -117,12 +118,8 @@ async function getRAWG(node) {
       }
       if(itr < 0) return null;
       const game = data.results[itr];
-      if(game.name.includes(game.name)) {
-        console.log("HERE");
-        return game.background_image;
-      }
-      return null;
-        
+      console.log(game);
+      return game.background_image; 
     } else return null;
   } catch (err) {
     console.error('RAWG fetch error:', err);

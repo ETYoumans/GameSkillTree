@@ -141,44 +141,54 @@ function calculateLayout(){
     rootX = centerX;
     rootY = centerY;
 
-    
-
-
     function recurse(node, depth, parentAngle) {
-    let x, y, angle;
+        let x, y, angle;
 
-    if (depth === 0) {
-        x = centerX;
-        y = centerY;
-    } else {
-        let total = currentTree.layers[depth];
-        if(total < 3 * Math.pow(2, depth - 1)){
-            total = 3 * Math.pow(2, depth - 1);
-            const angleStep = 2 * Math.PI / total;
-            let index = (parentAngle + (Math.PI / 2)) / (angleStep);
-            index = Math.floor(index);
-            angle = angleStep * index - Math.PI / 2;
-        } 
-        else {
-            const index = counters[depth]++;
-            const angleStep = 2 * Math.PI / total;
-            angle = angleStep * index - Math.PI / 2;
+        if (depth === 0) {
+            x = centerX;
+            y = centerY;
+        } else {
+            let total = currentTree.layers[depth];
+            let angleStep = 2 * Math.PI / total;
+            let tempIndex = 0;
+            let index;
+            let added = false;
+            while(!added){
+                if(total < 3 * Math.pow(2, depth - 1)){
+                    total = 3 * Math.pow(2, depth - 1);
+                    angleStep = 2 * Math.PI / total;
+                    index = (parentAngle + (Math.PI / 2)) / (angleStep);
+                    index = Math.floor(index) + tempIndex;
+                    angle = angleStep * index - Math.PI / 2;
+                } 
+                else {
+                    index = counters[depth]++;
+                    angle = angleStep * index - Math.PI / 2;
+                }
+                
+
+                let k=2;
+                if(depth < 3){
+                    k=1.5;
+                }
+
+                const radius = ((k * depth) + 1) * nodeRadius * 5;
+                
+                x = centerX + radius * Math.cos(angle);
+                y = centerY + radius * Math.sin(angle);
+                
+                if(Array.from(layoutMap.values()).some(obj => Math.floor(obj.x) == Math.floor(x) && Math.floor(obj.y) == Math.floor(y))){
+                    console.log("Recalculating");
+                    tempIndex++;
+                }
+                else{
+                    added = true;
+                }
+            }
         }
-        
+        layoutMap.set(node, { x, y });
 
-        let k=2;
-        if(depth < 3){
-            k=1.5;
-        }
-        const radius = ((k * depth) + 1) * nodeRadius * 5;
-        
-        x = centerX + radius * Math.cos(angle);
-        y = centerY + radius * Math.sin(angle);
-    }
-
-    layoutMap.set(node, { x, y });
-
-    node.children.forEach(child => recurse(child, depth + 1, angle));
+        node.children.forEach(child => recurse(child, depth + 1, angle));
     }
 
     recurse(root, 0, 0);
