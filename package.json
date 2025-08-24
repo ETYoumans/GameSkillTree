@@ -4,16 +4,22 @@
   "description": "Game Skill Tree:",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "package": "electron-packager . GameSkillTree --platform=win32 --arch=x64 --overwrite"
-  },
+  "start": "electron .",
+  "obfuscate": "javascript-obfuscator main.js --output main.js --compact true --self-defending true --string-array true --string-array-encoding base64 --string-array-threshold 1 --control-flow-flattening true --dead-code-injection true --disable-console-output true",
+  "package": "electron-packager . --platform=win32 --arch=x64 --overwrite"
+  }
+  ,
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "cpx": "^1.5.0",
+    "cpy": "^11.1.0",
     "electron": "^37.2.5",
     "electron-packager": "^17.1.2",
-    "electron-reload": "^2.0.0-alpha.1"
+    "electron-reload": "^2.0.0-alpha.1",
+    "javascript-obfuscator": "^4.1.1",
+    "rimraf": "^6.0.1"
   },
   "dependencies": {
     "@coreui/icons": "^3.0.1",

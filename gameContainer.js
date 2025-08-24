@@ -1,18 +1,45 @@
 import {saveTree} from "./newtree.js"
-
+import { displayCompletionContainer , displayUnlock } from "./pages.js";
 const titleContainer = document.getElementById("titleContainer");
 const imageContainer = document.getElementById("imageContainer");
 const buttonContainer = document.getElementById("buttonContainer");
 const points = document.getElementById("points");
 import { returnImage } from "./steam.js";
 
-function displayTitle(title){
-    titleContainer.innerHTML = `<h1>${title}</h1>`
+function displayTitle(title, subtitle) {
+    const container = document.getElementById("titleContainer");
+    
+    if (subtitle === '') {
+        container.innerHTML = `<h1>${title}</h1>`;
+    } else {
+        container.innerHTML = `<h1>${title}</h1><p>${subtitle}</p>`;
+    }
+    adjustTitle();
 }
 
-async function displayImage(title){
-    let image = await returnImage(title);
-    imageContainer.innerHTML = `<img src=${image} s />`
+function adjustTitle() {
+  const container = document.querySelector(".titleContainer");
+  const title = container.querySelector("h1");
+  const subtitle = container.querySelector("p");
+  if (!title) return;
+
+  let fontSize = 3; // in vw
+  title.style.fontSize = fontSize + "vw";
+
+  while (title.scrollHeight > container.clientHeight && fontSize > 0.5) {
+    fontSize -= 0.5;
+    title.style.fontSize = fontSize + "vw";
+    if(subtitle) subtitle.style.fontSize = (fontSize / 2) + "vw";
+  }
+}
+
+window.addEventListener("DOMContentLoaded", adjustTitle);
+window.addEventListener("resize", adjustTitle);
+
+
+async function displayImage(node){
+    let image = await returnImage(node);
+    imageContainer.innerHTML = `<img src=${image} />`
 }
 
 function displayButtons(svg, node, tree, root, render){
@@ -22,13 +49,12 @@ function displayButtons(svg, node, tree, root, render){
         unlockButton.addEventListener("click", () => {
             if(tree.points > 0){
                 tree.points -= 1;
+                tree.numCompleted += 0.2; //stores unlocked status in tree
                 node.locked = false;
                 svg.innerHTML = "";
-                render(root, tree);
+                render(root, tree, true);
                 displayButtons(svg, node, tree, root, render);
-            }
-            else{
-                console.log("Not enough points");
+                displayUnlock();
             }
             saveTree(tree);
             
@@ -38,21 +64,26 @@ function displayButtons(svg, node, tree, root, render){
         buttonContainer.innerHTML = `<button type="button" id="completeButton">COMPLETE</button>`;
         completeButton.addEventListener("click", () => {
             if(!node.completed){
-                tree.points += 1;
+                tree.points++;
+                tree.numCompleted -= 0.2; //removes unlocked status in tree
+                tree.numCompleted++;
                 node.completed = true;
-                render(root, tree);
+                displayCompletionContainer();
+                render(root, tree, true);
                 displayButtons(svg, node, tree, root, render);
-
+                displayUnlock();
             }
         });
     }
     else{
         buttonContainer.innerHTML = `<h3>COMPLETED</h3>`;
+        displayUnlock();
     }
+        
 }
 
 export function renderGameBox(svg, tree, node, root, render){
-    displayTitle(node.game);
-    displayImage(node.game);
+    displayTitle(node.game, node.subtitle);
+    displayImage(node);
     displayButtons(svg, node, tree, root, render);
 }

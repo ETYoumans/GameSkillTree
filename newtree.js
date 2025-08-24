@@ -39,8 +39,6 @@ export async function newTree(upload) {
   let treeName = obj.treename;
   let gameNames = obj.gamenames;
 
-  console.log(treeName);
-
   //shuffle game List
   gameNames.sort(() => Math.random()-0.5);
 
@@ -70,8 +68,21 @@ export async function newTree(upload) {
     } else {
       parent = eligible[Math.floor(Math.random() * eligible.length)]; //chose random parent out of candidates
     }
+    let temp = gameNames.shift();
+    let subtitle = "";
+    if(temp.includes("(") && temp.includes(")")){
+      let start = temp.indexOf("(");
+      let end = temp.indexOf(")");
 
-    let child = new Node(gameNames.shift(), Math.random() < 0.5 ? 2 : 3, true, false, false, "");
+      if(start < end){
+        subtitle = temp.slice(start+1, end);
+        temp = temp.slice(0, start);
+        if(temp.endsWith(' '))
+          temp = temp.trimEnd();
+      }
+    }
+    
+    let child = new Node(temp, Math.random() < 0.5 ? 2 : 3, true, false, false, subtitle);
     child.depth = parent.depth + 1;
     parent.push(child);
     nodes.push(child);

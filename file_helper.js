@@ -11,7 +11,7 @@ export async function write_tree(treeName, tree){
 export async function delete_tree(treeName){
     var deleted = await window.treeAPI.delete(treeName);
     if(deleted != "Successful deletion"){
-        console.log("Error: Failed to delete, " , deleted);
+        console.error("Error: Failed to delete, " , deleted);
     }
 }
 

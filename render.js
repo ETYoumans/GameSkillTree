@@ -48,25 +48,40 @@ function drawNode(svg, x,y, name, node, root, render, tree){
 
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
         text.setAttribute("x", x);
-        text.setAttribute("y", y + 4);
-        text.setAttribute("textLength", 2*K*nodeRadius - 2*K);
-        text.setAttribute("lengthAdjust", "spacingAndGlyphs");
+        text.setAttribute("y", y);
+        text.setAttribute("text-anchor", "middle");
         
-        let temp = name;
-        if(name.length > 20){
-            temp = name.substring(0,17) + "...";
-        }
+
+        let temp = getInitials(name);
         
         text.textContent = temp;
+
+        let fontSize = Math.min(2 * nodeRadius / temp.length, 12) * 1.5;
+        text.setAttribute("font-size", fontSize);
+        text.setAttribute("dy", fontSize * 0.35)
         text.classList.add("label");
         g.appendChild(text);
 
         g.addEventListener("click", () => {
-            renderGameBox(svg, tree, node, root, render);
+            renderGameBox(svg, tree, node, root, rerender);
         })
 
         svg.appendChild(g);
     }
+}
+
+function getInitials(s){
+    let count = 0;
+    const words = s.split(" ");
+    let temp = "";
+    for(let i = 0; i < words.length; i++){
+        temp = temp + words[i].charAt(0);
+        count++;
+        if(count > 5)
+            break;
+    }
+    return temp;
+    
 }
 
 function drawLine(svg, x1, y1, x2, y2) {
@@ -126,37 +141,57 @@ function calculateLayout(){
     rootX = centerX;
     rootY = centerY;
 
-    
+    function recurse(node, depth, parentAngle) {
+        let x, y, angle;
 
+        if (depth === 0) {
+            x = centerX;
+            y = centerY;
+        } else {
+            let total = currentTree.layers[depth];
+            let angleStep = 2 * Math.PI / total;
+            let tempIndex = 0;
+            let index;
+            let added = false;
+            while(!added){
+                if(total < 3 * Math.pow(2, depth - 1)){
+                    total = 3 * Math.pow(2, depth - 1);
+                    angleStep = 2 * Math.PI / total;
+                    index = (parentAngle + (Math.PI / 2)) / (angleStep);
+                    index = Math.floor(index) + tempIndex;
+                    angle = angleStep * index - Math.PI / 2;
+                } 
+                else {
+                    index = counters[depth]++;
+                    angle = angleStep * index - Math.PI / 2;
+                }
+                
 
-function recurse(node, depth) {
-  let x, y;
+                let k=2;
+                if(depth < 3){
+                    k=1.5;
+                }
 
-  if (depth === 0) {
-    x = centerX;
-    y = centerY;
-  } else {
-    const total = currentTree.layers[depth];
-    const index = counters[depth]++;
-    const angleStep = 2 * Math.PI / total;
-    const angle = angleStep * index - Math.PI / 2;
+                const radius = ((k * depth) + 1) * nodeRadius * 5;
+                
+                x = centerX + radius * Math.cos(angle);
+                y = centerY + radius * Math.sin(angle);
+                
+                if(Array.from(layoutMap.values()).some(obj => Math.floor(obj.x) == Math.floor(x) && Math.floor(obj.y) == Math.floor(y))){
+                    console.log("Recalculating");
+                    tempIndex++;
+                }
+                else{
+                    added = true;
+                }
+            }
+        }
+        layoutMap.set(node, { x, y });
 
-    let k=2;
-    if(depth < 3){
-        k=1.5;
+        node.children.forEach(child => recurse(child, depth + 1, angle));
     }
-    const radius = ((k * depth) + 1) * nodeRadius * 5;
-    
-    x = centerX + radius * Math.cos(angle);
-    y = centerY + radius * Math.sin(angle);
-  }
 
-  layoutMap.set(node, { x, y });
-
-  node.children.forEach(child => recurse(child, depth + 1));
-}
-
-    recurse(root, 0);
+    recurse(root, 0, 0);
 }
 
 window.addEventListener("resize", () => {
@@ -167,10 +202,10 @@ window.addEventListener("resize", () => {
 
 export function rerender() {
     if (!currentRoot || !currentTree) return;
-    render(currentRoot, currentTree);
+    render(currentRoot, currentTree, true);
 }
 
-export function render(root, tree){
+export function render(root, tree, preserve){
     const points = document.getElementById("points");
     const svg = document.getElementById("tree");
     const group = document.getElementById("treeGroup");
@@ -180,30 +215,24 @@ export function render(root, tree){
     const centerX = bounds.width / 2;
     const centerY = bounds.height / 2;
 
-    translateX = centerX - rootX;
-    translateY = centerY - rootY;
-    scale = 1;
+    if(!preserve){
+        translateX = centerX - rootX;
+        translateY = centerY - rootY;
+        scale = 1;
+    }
+    
 
-    requestAnimationFrame(() => {
-        if(tree.points > 0){
-            
-            points.innerHTML = "Unlock Available!";
-        }
-        else {
-            points.innerHTML = "";
-        }
+    requestAnimationFrame(() => {     
         saveTree(tree);
-
         group.innerHTML = "";
-
         draw(group, root, root, render, tree);
-        panAndZoom();
+        panAndZoom(preserve);
     });
     
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  panAndZoom();
+  panAndZoom(false);
 });
 
 
@@ -212,7 +241,7 @@ let translateX = 0;
 let translateY = 0;
 let scale = 1;
 
-function panAndZoom(){
+function panAndZoom(preserve) {
     const svg = document.getElementById("tree");
     const group = document.getElementById("treeGroup");
 
@@ -225,38 +254,39 @@ function panAndZoom(){
     const centerX = bounds.width / 2;
     const centerY = bounds.height / 2;
 
-    translateX = centerX - rootX;
-    translateY = centerY - rootY;
+    if (!preserve) {
+        translateX = centerX - rootX;
+        translateY = centerY - rootY;
+        scale = 1;
+    }
 
-
-    svg.addEventListener("mousedown", (e) => {
+    svg.onmousedown = (e) => {
         isPanning = true;
         startX = e.clientX;
         startY = e.clientY;
-    });
+    };
 
-    svg.addEventListener("mousemove", (e) => {
+    svg.onmousemove = (e) => {
         if (!isPanning) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
-            translateX += dx;
-            translateY += dy;
-            startX = e.clientX;
-            startY = e.clientY;
-            updateTransform();
-    });
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        translateX += dx;
+        translateY += dy;
+        startX = e.clientX;
+        startY = e.clientY;
+        updateTransform();
+    };
 
-    svg.addEventListener("mouseup", () => { isPanning = false; });
-    svg.addEventListener("mouseleave", () => { isPanning = false; });
+    svg.onmouseup = () => { isPanning = false; };
+    svg.onmouseleave = () => { isPanning = false; };
 
-    svg.addEventListener("wheel", (e) => {
+    svg.onwheel = (e) => {
         e.preventDefault();
         const zoomFactor = 0.1;
         const direction = e.deltaY > 0 ? -1 : 1;
 
         const mouseX = e.clientX - bounds.left;
         const mouseY = e.clientY - bounds.top;
-
 
         const beforeX = (mouseX - translateX) / scale;
         const beforeY = (mouseY - translateY) / scale;
@@ -267,10 +297,9 @@ function panAndZoom(){
         translateX = mouseX - beforeX * scale;
         translateY = mouseY - beforeY * scale;
         updateTransform();
-    }, {passive: false});
+    };
 
     updateTransform();
-    
 }
 
 export function resetView() {
@@ -289,8 +318,8 @@ export function resetView() {
 
 function updateTransform() {
     const group = document.getElementById("treeGroup");
-
-
-
     group.setAttribute("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
 }
+
+
+
